@@ -1,34 +1,52 @@
 import React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-
-
-export default function Footer ()  {
-
-  return(
-    <View>
-      <View>
-        <Button title="提供完了"
-                onPress={()=>{
-                navigation.navigate('Treasurer');
-                }}
-                  />
+function Footer({ navigation }) {
+  return (
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: "#c30" }]}>
+          <Text>提供完了</Text>
+        </TouchableOpacity>
         <View>
-          <Button title="販売終了"
-                  onPress={()=>{
-                  navigation.navigate('Home');
-                  }}
-                  />
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: "#393" }]}
+            onPress={() => navigation.popToTop()}
+          >
+            <Text>販売終了</Text>
+          </TouchableOpacity>
         </View>
-        <Button title="会計"
-                onPress={()=>{
-                navigation.navigate('Treasurer');
-         }}
-          />
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#f00" }]}
+          onPress={() => navigation.navigate("Treasurer")}
+        >
+          <Text>会計</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
-};
+}
 
+const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: "#c7c3c3"
+  },
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-evenly"
+  },
+  button: {
+    borderRadius: 50,
+    height: 50,
+    width: 100,
+    fontSize: 20,
+    margin: 5,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center"
+  }
+});
 
-//export default Footer;
+export default Footer;
