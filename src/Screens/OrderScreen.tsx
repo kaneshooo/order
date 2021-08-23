@@ -1,99 +1,119 @@
-import { useLinkProps } from "@react-navigation/native";
-import styled from "styled-components";
-import React from "react";
-import { useState } from "react";
-import { Text, View,  StyleSheet } from "react-native";
-import { Button } from 'react-native-paper';
+import React, { useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Text
+} from "react-native";
+import { Button, Divider } from "react-native-paper";
 import Footer from "../components/Footer";
 import ImgList from "../components/ImgList";
 
-function OrderScreen() {
+let ItemNum = [];
+for (let i = 1; i <= 20; i++) {
+  let item = { key: String(i) };
+  ItemNum.push(item);
+}
+
+function OrderScreen({ navigation }) {
   const [orderNumber, setOrderNumber] = useState();
   const [totalAmount, setTotalAmount] = useState(0);
   const [item_list, setItemList] = useState([]);
   return (
-    <View>
-      <View>
-        <View style={styles.orderItemNum}>
-          {item_list.map(item => {
-            return (
-              <View>
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <View style={styles.orderItemList}>
+          <FlatList
+            numColumns={2}
+            data={item_list}
+            renderItem={({ item }) => (
+              <Text style={styles.orderItemText}>
                 {item.productName} x {item.num}
-              </View>
-            );
-          })}
+              </Text>
+            )}
+          ></FlatList>
         </View>
         <View style={styles.orderInfo}>
-          <Text style={styles.orderNumber}>{orderNumber}番</Text>
-          <Text style={styles.totalAmount}>¥{totalAmount}</Text>
+          <Text style={styles.number}>{orderNumber}番</Text>
+          <Text style={styles.number}>¥{totalAmount}</Text>
         </View>
-        <View style={styles.container}>
-          <View style={styles.container}>
-            <Menu>
-            {<ImgList
-            /* totalAmount={totalAmount}
-            setTotalAmount={setTotalAmount}*/
-            item_list={item_list}
-            setItemList={setItemList}
-          /> }
-            </Menu>
+        <Divider style={styles.divider} />
+        <View style={styles.orderList}>
+          <View style={styles.menu}>
+            <ImgList
+              totalAmount={totalAmount}
+              setTotalAmount={setTotalAmount}
+              item_list={item_list}
+              setItemList={setItemList}
+            />
           </View>
-          <View style={styles.orderNumberList}>
-            {ordernum.map(i =>(
-              <Button icon='camera' style={styles.orderNumberButton} onPress={() => setOrderNumber(i)}>  
-                <Text style={styles.buttonText}> {i} </Text>
-              </Button>
-            ))}
-          </View>
+          <FlatList
+            style={styles.orderNumber}
+            data={ItemNum}
+            numColumns={3}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => setOrderNumber(item.key)}
+              >
+                <Text>{item.key}</Text>
+              </TouchableOpacity>
+            )}
+          ></FlatList>
         </View>
       </View>
-
-      <Footer />
+      <Footer navigation={navigation} />
     </View>
   );
 }
 
-const ordernum=[];
-for(let i=1;i<21;i++){
-  ordernum[i]=i;
-}
-
-const Menu= styled.div``;
 const styles = StyleSheet.create({
-  orderItemNum: {
-    height: 100,
-    overflow: "scroll"
-  },
-  orderInfo: {
-    display: "flex",
-    justifyContent: "space-around"
-  },
-  orderNumber: {
-    fontSize: 30
-  },
-  totalAmount: {
-    fontSize: 30
+  wrapper: {
+    flex: 1,
+    paddingTop: 20
   },
   container: {
-    display: "flex",
-    width: "100%",
-    height: "100%",
-    marginBottom: 30
+    flex: 1
   },
-  orderNumberList: {
-    flexDirection: "column",
-    overflow: "scroll",
-    height: 480,
-    width: "100%",
-    textAlign: "center"
+  orderItemList: {
+    height: "20%"
   },
-  orderNumberButton: {
-    marginTop: 10,
-    backgroundColor:'#fff',
-    width: "40",
-    height: "40"
+  orderItemText: {
+    fontSize: 20,
+    paddingTop: 3,
+    paddingLeft: 10,
+    paddingRight: 15
+  },
+  orderInfo: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    height: "8%"
+  },
+  divider: {
+    margin: 5,
+    borderWidth: 0.5
+  },
+  number: {
+    fontSize: 30
+  },
+  menu: {
+    width: "70%"
+  },
+  orderNumber: {
+    width: "30%"
+  },
+  orderList: {
+    flexDirection: "row",
+    height: "70%"
+  },
+  item: {
+    backgroundColor: "#AAA",
+    width: "50%",
+    height: 100,
+    alignItems: "center",
+    justifyContent: "center"
   }
- 
 });
 
 export default OrderScreen;
