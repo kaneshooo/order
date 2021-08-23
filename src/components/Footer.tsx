@@ -7,19 +7,21 @@ function Footer({ navigation }) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#c30" }]}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#FFA500" }]}
+        >
           <Text>提供完了</Text>
         </TouchableOpacity>
         <View>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#393" }]}
+            style={[styles.button, { backgroundColor: "#f00" }]}
             onPress={() => navigation.popToTop()}
           >
             <Text>販売終了</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#f00" }]}
+          style={[styles.button, { backgroundColor: "#393" }]}
           onPress={() => navigation.navigate("Treasurer")}
         >
           <Text>会計</Text>
@@ -31,7 +33,7 @@ function Footer({ navigation }) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#c7c3c3"
+    backgroundColor: "#FFF"
   },
   container: {
     flexDirection: "row",
