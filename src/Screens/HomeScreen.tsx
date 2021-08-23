@@ -7,13 +7,19 @@ function HomeScreen({ navigation }) {
       <Text style={styles.title}>HOME</Text>
 
       <TouchableOpacity
-        style={styles.startButton}
+        style={[styles.button, { backgroundColor: "#99ff66" }]}
         onPress={() => navigation.navigate("Order")}
       >
         <Text style={styles.buttonSize}>start</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.logButton}
+        style={[styles.button, { backgroundColor: "#999" }]}
+        onPress={() => navigation.navigate("Setting")}
+      >
+        <Text style={styles.buttonSize}>Setting</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#0099ff" }]}
         onPress={() => navigation.navigate("Log")}
       >
         <Text style={styles.buttonSize}>Log</Text>
@@ -29,35 +35,26 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   title: {
-    borderRadius: "solid",
-    fontSize: 40,
-    marginTop: 50,
-    width: 300,
-    height: 300,
+    borderWidth: 1,
+    borderColor: "#E1E1E1",
+    borderRadius: 2,
+    fontSize: 50,
+    marginBottom: 40,
     borderRadius: 20,
-    padding: 15,
+    padding: 30,
     textAlign: "center"
   },
-  startButton: {
+  button: {
     fontSize: 30,
     width: 150,
     height: 70,
-    backgroundColor: "#99ff66",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  buttonSize: {
-    fontSize: 30
-  },
-  logButton: {
-    width: 150,
-    height: 70,
-    backgroundColor: "#0099ff",
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
     margin: 10
+  },
+  buttonSize: {
+    fontSize: 30
   }
 });
 
