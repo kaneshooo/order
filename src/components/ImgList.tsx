@@ -79,7 +79,6 @@ const ImgList = props => {
 
   const setOrderInfo = (product_name, price) => {
     if (!checkArray(product_name)) {
-      console.log("実行2");
       setItemList([...item_list, { productName: product_name, num: 1 }]);
     }
     setTotalAmount(totalAmount + price);
@@ -97,9 +96,8 @@ const ImgList = props => {
             onPress={() => setOrderInfo(item.product_name, item.price)}
           >
             <Image style={styles.img} source={item.img} />
-            <Text>
-              {item.product_name} {item.price}円
-            </Text>
+            <Text>{item.product_name}</Text>
+            <Text>{item.price}円</Text>
           </TouchableOpacity>
         )}
       ></FlatList>
@@ -108,15 +106,20 @@ const ImgList = props => {
 };
 const styles = StyleSheet.create({
   img: {
-    width: "100%",
-    height: 100
+    width: "90%",
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 5,
+    marginTop: 5
   },
   item: {
-    width: "50%",
-    height: 120,
+    width: "48%",
+    height: 140,
     alignItems: "center",
     justifyContent: "center",
-    padding: 5
+    backgroundColor: "#FFF",
+    margin: 2,
+    borderRadius: 10
   }
 });
 export default ImgList;

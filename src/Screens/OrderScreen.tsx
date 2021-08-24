@@ -23,22 +23,25 @@ function OrderScreen({ navigation }) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <View style={styles.orderItemList}>
-          <FlatList
-            numColumns={2}
-            data={item_list}
-            renderItem={({ item }) => (
-              <Text style={styles.orderItemText}>
-                {item.productName} x {item.num}
-              </Text>
-            )}
-          ></FlatList>
-        </View>
         <View style={styles.orderInfo}>
           <Text style={styles.number}>{orderNumber}番</Text>
           <Text style={styles.number}>¥{totalAmount}</Text>
         </View>
         <Divider style={styles.divider} />
+        <View style={styles.orderItemList}>
+          <FlatList
+            numColumns={2}
+            data={item_list}
+            renderItem={({ item }) => (
+              <View style={styles.orderRow}>
+                <Text style={styles.orderItemText}>
+                  {item.productName} x {item.num}
+                </Text>
+              </View>
+            )}
+          ></FlatList>
+        </View>
+
         <View style={styles.orderList}>
           <View style={styles.menu}>
             <ImgList
@@ -51,13 +54,12 @@ function OrderScreen({ navigation }) {
           <FlatList
             style={styles.orderNumber}
             data={ItemNum}
-            numColumns={3}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.item}
                 onPress={() => setOrderNumber(item.key)}
               >
-                <Text>{item.key}</Text>
+                <Text style={styles.buttonText}>{item.key}</Text>
               </TouchableOpacity>
             )}
           ></FlatList>
@@ -71,7 +73,8 @@ function OrderScreen({ navigation }) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    paddingTop: 20
+    paddingTop: 30,
+    backgroundColor: "#FFF"
   },
   container: {
     flex: 1
@@ -90,29 +93,40 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     height: "8%"
   },
+  orderRow: {
+    width: "50%",
+    paddingLeft: 10
+  },
   divider: {
     margin: 5,
-    borderWidth: 0.5
+    borderWidth: 0.5,
+    borderColor: "#73899d"
   },
   number: {
     fontSize: 30
   },
   menu: {
-    width: "70%"
+    width: "80%"
   },
   orderNumber: {
-    width: "30%"
+    width: "20%"
   },
   orderList: {
     flexDirection: "row",
-    height: "70%"
+    height: "70%",
+    backgroundColor: "#f0f0f0"
   },
   item: {
-    backgroundColor: "#AAA",
-    width: "50%",
-    height: 100,
+    width: 70,
+    height: 70,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    borderRadius: 50,
+    backgroundColor: "#FFF"
+  },
+  buttonText: {
+    fontSize: 20,
+    color: "#73899d"
   }
 });
 
