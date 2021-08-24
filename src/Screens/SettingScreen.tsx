@@ -5,7 +5,7 @@ function SettingScreen({ navigation }) {
   console.log(navigation);
   return (
     <View>
-      <Text>Setting</Text>
+      <Text>test</Text>
     </View>
   );
 }
