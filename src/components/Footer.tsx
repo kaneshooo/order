@@ -1,30 +1,32 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Icon from "react-native-vector-icons/AntDesign";
+import Icon2 from "react-native-vector-icons/FontAwesome";
 
 function Footer({ navigation }) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#FFA500" }]}
+          style={styles.button}
+          onPress={() => navigation.popToTop()}
         >
-          <Text>提供完了</Text>
+          <Icon2 name="handshake-o" size={20} color="#73899d" />
+          <Text style={styles.footerText}>提供完了</Text>
         </TouchableOpacity>
-        <View>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#f00" }]}
-            onPress={() => navigation.popToTop()}
-          >
-            <Text>販売終了</Text>
-          </TouchableOpacity>
-        </View>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#393" }]}
+          style={styles.button}
+          onPress={() => navigation.popToTop()}
+        >
+          <Icon name="home" size={20} color="#73899d" />
+          <Text style={styles.footerText}>販売終了</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
           onPress={() => navigation.navigate("Treasurer")}
         >
-          <Text>会計</Text>
+          <Icon name="pay-circle-o1" size={20} color="#73899d" />
+          <Text style={styles.footerText}>会計</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -33,21 +35,22 @@ function Footer({ navigation }) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#FFF"
+    backgroundColor: "#fdfdfd",
+    height: 45
   },
   container: {
     flexDirection: "row",
     justifyContent: "space-evenly"
   },
   button: {
-    borderRadius: 50,
-    height: 50,
-    width: 100,
-    fontSize: 20,
-    margin: 5,
-    padding: 10,
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    marginTop: 5
+  },
+  footerText: {
+    fontSize: 15,
+    marginTop: 5,
+    color: "#73899d"
   }
 });
 
