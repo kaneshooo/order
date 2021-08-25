@@ -4,25 +4,24 @@ import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 function HomeScreen({ navigation }) {
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.title}>HOME</Text>
-
+      <Text style={styles.title}>Home</Text>
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#99ff66" }]}
+        style={[styles.button, { backgroundColor: "#053050" }]}
         onPress={() => navigation.navigate("Order")}
       >
-        <Text style={styles.buttonSize}>start</Text>
+        <Text style={[styles.buttonSize, { color: "#FFF" }]}>Start</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#FFF" }]}
+        onPress={() => navigation.navigate("Log")}
+      >
+        <Text style={[styles.buttonSize, { color: "#053050" }]}>Log</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#999" }]}
         onPress={() => navigation.navigate("Setting")}
       >
         <Text style={styles.buttonSize}>Setting</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#0099ff" }]}
-        onPress={() => navigation.navigate("Log")}
-      >
-        <Text style={styles.buttonSize}>Log</Text>
       </TouchableOpacity>
     </View>
   );
@@ -35,26 +34,24 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   title: {
-    borderWidth: 1,
-    borderColor: "#E1E1E1",
-    borderRadius: 2,
-    fontSize: 50,
-    marginBottom: 40,
-    borderRadius: 20,
-    padding: 30,
-    textAlign: "center"
+    color: "#053050",
+    fontWeight: "700",
+    fontSize: 70,
+    marginBottom: 80,
+    padding: 30
   },
   button: {
     fontSize: 30,
-    width: 150,
-    height: 70,
-    borderRadius: 20,
+    width: 300,
+    height: 55,
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
     margin: 10
   },
   buttonSize: {
-    fontSize: 30
+    fontSize: 30,
+    fontWeight: "500"
   }
 });
 
