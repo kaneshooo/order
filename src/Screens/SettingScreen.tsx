@@ -1,69 +1,54 @@
 import React from "react";
+import { useState ,useEffect} from "react";
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   FlatList,
   Text,
+  TextInput,
   Image
 } from "react-native";
+import { firebase } from '@firebase/app';
+import 'firebase/storage'; 
+import 'firebase/firestore';
 
 import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../components/Header";
 
-import ann from "../img/ann.jpg";
-import ball from "../img/ball.jpeg";
-import koin from "../img/koin.jpeg";
-import syateki from "../img/syateki.jpg";
-import takoyaki from "../img/takoyaki.jpg";
-import watagashi from "../img/watagashi.png";
-import yakisoba from "../img/yakisoba.jpg";
-import yoyo from "../img/yoyo.jpg";
-
-const itemData = [
-  {
-    img: ann,
-    product_name: "お面",
-    price: 300
-  },
-  {
-    img: ball,
-    product_name: "ぼーるすくい",
-    price: 200
-  },
-  {
-    img: koin,
-    product_name: "コイン落とし",
-    price: 200
-  },
-  {
-    img: syateki,
-    product_name: "射的",
-    price: 200
-  },
-  {
-    img: takoyaki,
-    product_name: "たこ焼き",
-    price: 500
-  },
-  {
-    img: watagashi,
-    product_name: "わたがし",
-    price: 400
-  },
-  {
-    img: yakisoba,
-    product_name: "やきそば",
-    price: 500
-  },
-  {
-    img: yoyo,
-    product_name: "ヨーヨーすくい",
-    price: 200
-  }
-];
-
 function SettingScreen({ navigation }) {
+
+  const [data,setData]=useState([]);
+  
+// firestoreからデータを取得
+const dbget=async()=>{
+  var db=firebase.firestore();
+  
+  const docRef= db.collection("users").doc("menu").collection("ゲーム");
+  docRef.get().then(
+    querySnapshot => {
+      querySnapshot.docs.map(
+        (doc => {
+          setData([
+            ...data,
+            {
+              name:doc.data().name,
+              price:doc.data().price,
+              url:doc.data().url,
+              id:doc.id
+            },
+          ]);
+        }
+        )
+     )
+  }   
+  );}
+
+  useEffect(() => {
+    console.log('useEffect')
+    dbget()
+  },[])
+console.log(data)
   return (
     <View style={styles.wrapper}>
       <Header navigation={navigation} name="アイテム管理" />
@@ -73,24 +58,27 @@ function SettingScreen({ navigation }) {
           <Icon name="arrow-back-outline" size={30} color="#FFF" />
         </TouchableOpacity>
 
-        <Text style={styles.distinctionText}>アイテム分類</Text>
-
+        <TextInput style={styles.distinctionText} 
+                  //  onChangeText={(text) => setPageText(text)}
+                   
+        />
         <TouchableOpacity onPress={() => navigation.popToTop()}>
           <Icon name="arrow-forward-outline" size={30} color="#FFF" />
         </TouchableOpacity>
       </View>
 
       <FlatList
-        data={itemData}
+        data={data}
         numColumns={4}
-        keyExtractor={item => item.product_name}
+        keyExtractor={item => item.id}
+       
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
             onPress={() => navigation.navigate("Detail", { item })}
           >
-            <Image style={styles.img} source={item.img} />
-            <Text>{item.product_name}</Text>
+            <Image style={styles.img} source={{uri:item.url}} />
+            <Text>{item.name}</Text>
           </TouchableOpacity>
         )}
       ></FlatList>
@@ -124,7 +112,9 @@ const styles = StyleSheet.create({
   distinctionText: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#FFF"
+    color: "#FFF",
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   add: {
     position: "absolute",

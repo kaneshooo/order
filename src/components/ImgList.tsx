@@ -93,8 +93,7 @@ const ImgList = props => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
-            onPress={() => setOrderInfo(item.product_name, item.price)}
-          >
+            onPress={() => setOrderInfo(item.product_name, item.price)}>
             <Image style={styles.img} source={item.img} />
             <Text>{item.product_name}</Text>
             <Text>{item.price}円</Text>

@@ -8,6 +8,8 @@ import DetailScreen from "./Screens/DetailScreen";
 import LogScreen from "./Screens/LogScreen";
 import TreasurerScreen from "./Screens/TreasurerScreen";
 
+import './firebase';
+
 const Stack = createNativeStackNavigator();
 function RootStack() {
   return (
@@ -21,6 +23,7 @@ function RootStack() {
       <Stack.Screen name="Log" component={LogScreen} />
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="Treasurer" component={TreasurerScreen} />
+
     </Stack.Navigator>
   );
 }
