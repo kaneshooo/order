@@ -9,6 +9,9 @@ import {
 import { Button, Divider } from "react-native-paper";
 import Footer from "../components/Footer";
 import ImgList from "../components/ImgList";
+import { firebase } from '@firebase/app';
+import 'firebase/storage'; 
+import 'firebase/firestore';
 
 let ItemNum = [];
 for (let i = 1; i <= 20; i++) {
@@ -20,6 +23,7 @@ function OrderScreen({ navigation }) {
   const [orderNumber, setOrderNumber] = useState();
   const [totalAmount, setTotalAmount] = useState(0);
   const [item_list, setItemList] = useState([]);
+  
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>

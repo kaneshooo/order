@@ -12,42 +12,43 @@ import {
 import { firebase } from '@firebase/app';
 import 'firebase/storage'; 
 import 'firebase/firestore';
-
 import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../components/Header";
 
+
 function SettingScreen({ navigation }) {
 
-  const [data,setData]=useState([]);
-  
+  const [data,setdata]=useState();
+  const [pagename,setPageText]=useState();
 // firestoreからデータを取得
 const dbget=async()=>{
+  console.log('DB')
   var db=firebase.firestore();
-  
   const docRef= db.collection("users").doc("menu").collection("ゲーム");
-  docRef.get().then(
+    const result=await docRef.get().then(
     querySnapshot => {
-      querySnapshot.docs.map(
-        (doc => {
-          setData([
-            ...data,
-            {
-              name:doc.data().name,
-              price:doc.data().price,
-              url:doc.data().url,
-              id:doc.id
-            },
-          ]);
-        }
-        )
-     )
-  }   
-  );}
+      let bb=[]; 
+      querySnapshot.forEach
+        (doc=> {
+          bb.push(
+            Object.assign({
+            id:doc.id,
+            page:pagename,
+            url:doc.data().url,
+            name:doc.data().name,
+            price:doc.data().price
+            })
+            )                          
+        })
+    console.log(bb);
+    return bb;
+  });   
+   setdata(result);
+}
 
-  useEffect(() => {
-    console.log('useEffect')
-    dbget()
-  },[])
+useEffect(()=>{
+dbget();
+},[])
 console.log(data)
   return (
     <View style={styles.wrapper}>
@@ -59,8 +60,8 @@ console.log(data)
         </TouchableOpacity>
 
         <TextInput style={styles.distinctionText} 
-                  //  onChangeText={(text) => setPageText(text)}
-                   
+                   onChangeText={text => setPageText(text)}
+                   defaultValue={'page1'}
         />
         <TouchableOpacity onPress={() => navigation.popToTop()}>
           <Icon name="arrow-forward-outline" size={30} color="#FFF" />
@@ -71,7 +72,6 @@ console.log(data)
         data={data}
         numColumns={4}
         keyExtractor={item => item.id}
-       
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
@@ -83,7 +83,7 @@ console.log(data)
         )}
       ></FlatList>
 
-      <TouchableOpacity onPress={() => navigation.popToTop()}>
+      <TouchableOpacity onPress={() => navigation.navigate("Register", {  })}>
         <Icon
           style={styles.add}
           name="add-circle-sharp"
@@ -94,6 +94,7 @@ console.log(data)
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -152,4 +153,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SettingScreen;
+export default SettingScreen

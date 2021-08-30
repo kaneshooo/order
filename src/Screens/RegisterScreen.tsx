@@ -17,19 +17,24 @@ import Header from "../components/Header";
 
 function DetailScreen(props) {
 
-const item = props.route.params.item;
+
 const [image,setImage]=useState();
 const [File,setFile]=useState();
-const [name, onChangeText] = useState(item.name);
-const [price, onChangePrice] = useState(item.price);
+const [name, onChangeText] = useState('');
+const [price, onChangePrice] = useState();
 
 const db=(Imurl)=>{
-    var db=firebase.firestore();console.log(price)
+    var db=firebase.firestore();
     Imurl.getDownloadURL().then(function(URL){
-    db.collection("users").doc("menu").collection(item.pagename).doc(String(item.id)).set({
+    var col=db.collection("users").doc("menu").collection("ゲーム");
+    col.get().then(snap=>{
+        var size=snap.size+1;
+        console.log(size)
+    col.doc(String(size)).set({
       name:name,
       price:Number(price),
-      url:URL
+      url:URL,
+      id:size
     }).then((doc)=>{
       alert('保存できました');
       console.log('success');
@@ -38,6 +43,7 @@ const db=(Imurl)=>{
     })    
     }).catch(function(error){
         console.log(error);
+    });
     });
 }
 
@@ -86,16 +92,16 @@ var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
       <TextInput
         style={styles.input}
         onChangeText={text=>onChangeText(text)}
-        defaultValue={item.name}
         value={name}
+        placeholder="商品名"
         mode="outlined"
       />
       
       <TextInput
         style={styles.input}
         onChangeText={text=>onChangePrice(text)}
-        defaultValue={item.price}
         value={price}
+        placeholder="値段"
         mode="outlined"
       />
       <Button mode="contained" title="保存"  onPress={()=> approad()} type='file'/>
