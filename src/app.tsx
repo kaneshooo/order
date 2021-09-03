@@ -8,6 +8,7 @@ import DetailScreen from "./Screens/DetailScreen";
 import LogScreen from "./Screens/LogScreen";
 import TreasurerScreen from "./Screens/TreasurerScreen";
 import RegisterScreen from "./Screens/RegisterScreen";
+import CostemerListScreen from "./Screens/CostemerListScreen";
 import './firebase';
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ function RootStack() {
       <Stack.Screen name="Detail" component={DetailScreen} />
       <Stack.Screen name="Treasurer" component={TreasurerScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="CostemerList" component={CostemerListScreen} />
     </Stack.Navigator>
   );
 }
