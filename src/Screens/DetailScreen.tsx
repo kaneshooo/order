@@ -16,7 +16,7 @@ import {
 import Header from "../components/Header";
 
 function DetailScreen(props) {
-
+console.log(props)
 const item = props.route.params.item;
 const [image,setImage]=useState();
 const [File,setFile]=useState();
@@ -26,7 +26,7 @@ const [price, onChangePrice] = useState(item.price);
 const db=(Imurl)=>{
     var db=firebase.firestore();console.log(price)
     Imurl.getDownloadURL().then(function(URL){
-    db.collection("users").doc("menu").collection(item.pagename).doc(String(item.id)).set({
+    db.collection("users").doc("menu").collection("ゲーム").doc(String(item.id)).set({
       name:name,
       price:Number(price),
       url:URL
