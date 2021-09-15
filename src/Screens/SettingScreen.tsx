@@ -1,101 +1,113 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   FlatList,
   Text,
-  Image
+  Image,
+  Dimensions
 } from "react-native";
-
+import { firebase } from "@firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
 import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../components/Header";
+import { TabView, ScrollPager, TabBar } from "react-native-tab-view";
 
-import ann from "../img/ann.jpg";
-import ball from "../img/ball.jpeg";
-import koin from "../img/koin.jpeg";
-import syateki from "../img/syateki.jpg";
-import takoyaki from "../img/takoyaki.jpg";
-import watagashi from "../img/watagashi.png";
-import yakisoba from "../img/yakisoba.jpg";
-import yoyo from "../img/yoyo.jpg";
+function ListRoute(props) {
+  return (
+    <FlatList
+      data={props.data}
+      numColumns={4}
+      keyExtractor={item => item.id}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => props.navigation.navigate("Detail", { item })}
+        >
+          <Image style={styles.img} source={{ uri: item.url }} />
+          <Text>{item.name}</Text>
+        </TouchableOpacity>
+      )}
+    ></FlatList>
+  );
+}
 
-const itemData = [
-  {
-    img: ann,
-    product_name: "お面",
-    price: 300
-  },
-  {
-    img: ball,
-    product_name: "ぼーるすくい",
-    price: 200
-  },
-  {
-    img: koin,
-    product_name: "コイン落とし",
-    price: 200
-  },
-  {
-    img: syateki,
-    product_name: "射的",
-    price: 200
-  },
-  {
-    img: takoyaki,
-    product_name: "たこ焼き",
-    price: 500
-  },
-  {
-    img: watagashi,
-    product_name: "わたがし",
-    price: 400
-  },
-  {
-    img: yakisoba,
-    product_name: "やきそば",
-    price: 500
-  },
-  {
-    img: yoyo,
-    product_name: "ヨーヨーすくい",
-    price: 200
-  }
-];
+function SettingScreen(props) {
+  let [data, setData] = useState(0);
+  const [index, setIndex] = useState(0);
+  let routes = props.route.params.routes;
+  let navigation = props.navigation;
+  let classification = [];
 
-function SettingScreen({ navigation }) {
+  const dbget = async () => {
+    let db = firebase.firestore();
+    const docRef = db
+      .collection("users")
+      .doc("menu")
+      .collection("商品");
+
+    const result = await docRef.get().then(querySnapshot => {
+      let str = [];
+      querySnapshot.forEach(doc => {
+        console.log(doc.data().category);
+        let categoryName = routes[doc.data().category - 1].title;
+        console.log(categoryName);
+        str.push(
+          Object.assign({
+            id: doc.id,
+            url: doc.data().url,
+            name: doc.data().name,
+            categoryName: categoryName,
+            price: doc.data().price
+          })
+        );
+      });
+      return str;
+    });
+
+    routes.forEach(function(category) {
+      classification.push(
+        result.filter(function(value) {
+          return value.categoryName == category.title;
+        })
+      );
+    });
+    setData(classification);
+  };
+
+  useEffect(() => {
+    dbget();
+  }, []);
+
+  const renderScene = ({ route }) => {
+    return <ListRoute data={data[route.key - 1]} navigation={navigation} />;
+  };
+  const initialLayout = { width: Dimensions.get("window").width };
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: "#e91e63" }}
+      style={{ backgroundColor: "white" }}
+      labelStyle={{ color: "black" }}
+      scrollEnabled={true}
+      tabStyle={{ width: 80 }}
+    />
+  );
   return (
     <View style={styles.wrapper}>
       <Header navigation={navigation} name="アイテム管理" />
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+        renderTabBar={renderTabBar}
+      />
 
-      <View style={styles.distinction}>
-        <TouchableOpacity onPress={() => navigation.popToTop()}>
-          <Icon name="arrow-back-outline" size={30} color="#FFF" />
-        </TouchableOpacity>
-
-        <Text style={styles.distinctionText}>アイテム分類</Text>
-
-        <TouchableOpacity onPress={() => navigation.popToTop()}>
-          <Icon name="arrow-forward-outline" size={30} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={itemData}
-        numColumns={4}
-        keyExtractor={item => item.product_name}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => navigation.navigate("Detail", { item })}
-          >
-            <Image style={styles.img} source={item.img} />
-            <Text>{item.product_name}</Text>
-          </TouchableOpacity>
-        )}
-      ></FlatList>
-
-      <TouchableOpacity onPress={() => navigation.popToTop()}>
+      <TouchableOpacity onPress={() => navigation.navigate("Register", {})}>
         <Icon
           style={styles.add}
           name="add-circle-sharp"
@@ -124,7 +136,9 @@ const styles = StyleSheet.create({
   distinctionText: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#FFF"
+    color: "#FFF",
+    alignItems: "center",
+    justifyContent: "center"
   },
   add: {
     position: "absolute",
@@ -159,6 +173,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     padding: 1,
     borderRadius: 10
+  },
+  containerHeader: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  textContainer: {
+    marginTop: 70
+  },
+  textWhite: {
+    color: "black",
+    marginVertical: 10
+  },
+  tabContainer: {
+    backgroundColor: "white",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    height: "20%",
+    alignItems: "center",
+    marginTop: 10,
+    height: 40
   }
 });
 

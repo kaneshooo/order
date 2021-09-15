@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState ,useEffect} from "react";
 import {
   View,
   TouchableOpacity,
@@ -8,66 +8,49 @@ import {
   Button,
   Image
 } from "react-native";
-import ann from "../img/ann.jpg";
-import ball from "../img/ball.jpeg";
-import koin from "../img/koin.jpeg";
-import syateki from "../img/syateki.jpg";
-import takoyaki from "../img/takoyaki.jpg";
-import watagashi from "../img/watagashi.png";
-import yakisoba from "../img/yakisoba.jpg";
-import yoyo from "../img/yoyo.jpg";
+import { firebase } from '@firebase/app';
+import 'firebase/storage'; 
+import 'firebase/firestore';
 
-const itemData = [
-  {
-    img: ann,
-    product_name: "お面",
-    price: 300
-  },
-  {
-    img: ball,
-    product_name: "ぼーるすくい",
-    price: 200
-  },
-  {
-    img: koin,
-    product_name: "コイン落とし",
-    price: 200
-  },
-  {
-    img: syateki,
-    product_name: "射的",
-    price: 200
-  },
-  {
-    img: takoyaki,
-    product_name: "たこ焼き",
-    price: 500
-  },
-  {
-    img: watagashi,
-    product_name: "わたがし",
-    price: 400
-  },
-  {
-    img: yakisoba,
-    product_name: "やきそば",
-    price: 500
-  },
-  {
-    img: yoyo,
-    product_name: "ヨーヨーすくい",
-    price: 200
-  }
-];
+
 
 const ImgList = props => {
-  const { totalAmount, setTotalAmount, item_list, setItemList } = props;
+  const { totalAmount, setTotalAmount, item_list, setItemList,orderNumber } = props;
 
-  const checkArray = product_name => {
+const [data,setdata]=useState();
+const dbget=async()=>{
+
+  var db=firebase.firestore();
+  const docRef= db.collection("users").doc("menu").collection("ゲーム");
+    const result=await docRef.get().then(
+    querySnapshot => {
+      let bb=[]; 
+      querySnapshot.forEach
+        (doc=> {
+          bb.push(
+            Object.assign({
+            id:doc.id,
+            // page:pagename,
+            url:doc.data().url,
+            name:doc.data().name,
+            price:doc.data().price
+            })
+            )                          
+        })
+    console.log(bb);
+    return bb;
+  });   
+   setdata(result);
+}
+  useEffect(()=>{
+  dbget();
+  },[])
+
+  const checkArray = (product_name) => {
     let exist;
     item_list.find((item, index) => {
-      if (item.productName === product_name) {
-        let tmp = item_list.slice();
+      if (item.name === product_name) {
+        let tmp = item_list;
         tmp[index].num += 1;
         setItemList(tmp);
         exist = true;
@@ -75,28 +58,42 @@ const ImgList = props => {
     });
 
     return exist;
-  };
-
+  }
   const setOrderInfo = (product_name, price) => {
-    if (!checkArray(product_name)) {
-      setItemList([...item_list, { productName: product_name, num: 1 }]);
+  
+
+   if (!checkArray(product_name)){
+    setItemList([...item_list, {name: product_name, num: 1, price:price}]);
     }
     setTotalAmount(totalAmount + price);
   };
+
+
+const dbset=async()=>{
+  var db=firebase.firestore();
+  var date=new Date();
+  var time=date.getUTCFullYear()+"-"+date.getMonth()+1+"-"+date.getDate();
+  
+  const docRef= db.collection("users").doc("order").collection(time);
+  docRef.doc(item_list.ordernum).put.then(
+    
+  )
+}
+
   return (
     <View>
       <FlatList
         style={styles.orderMenu}
-        data={itemData}
+        data={data}
         numColumns={2}
-        keyExtractor={item => item.product_name}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
-            onPress={() => setOrderInfo(item.product_name, item.price)}
-          >
-            <Image style={styles.img} source={item.img} />
-            <Text>{item.product_name}</Text>
+            onPress={() => setOrderInfo(item.name, item.price) }
+            >
+            <Image style={styles.img} source={{uri:item.url}}  />
+            <Text>{item.name}</Text>
             <Text>{item.price}円</Text>
           </TouchableOpacity>
         )}
