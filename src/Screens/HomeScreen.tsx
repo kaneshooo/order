@@ -1,7 +1,39 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
+import { useState, useEffect } from "react";
+import { firebase } from "@firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
 
 function HomeScreen({ navigation }) {
+  let routes;
+  const dbget = async () => {
+    let db = firebase.firestore();
+    const categoryRef = db
+      .collection("users")
+      .doc("menu")
+      .collection("カテゴリー名");
+
+    const result = await categoryRef.get().then(querySnapshot => {
+      let str = [];
+      querySnapshot.forEach(doc => {
+        str.push(
+          Object.assign({
+            key: doc.id,
+            title: doc.data().name
+          })
+        );
+      });
+
+      return str;
+    });
+    routes = result;
+    console.log(routes);
+  };
+  useEffect(() => {
+    dbget();
+  }, []);
+
   return (
     <View style={styles.wrapper}>
       <Text style={styles.title}>Home</Text>
@@ -19,7 +51,7 @@ function HomeScreen({ navigation }) {
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#999" }]}
-        onPress={() => navigation.navigate("Setting")}
+        onPress={() => navigation.navigate("Setting", { routes })}
       >
         <Text style={styles.buttonSize}>Setting</Text>
       </TouchableOpacity>
