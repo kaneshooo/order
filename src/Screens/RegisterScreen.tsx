@@ -25,37 +25,38 @@ const [price, onChangePrice] = useState();
 
 const db=(Imurl)=>{
     var db=firebase.firestore();
+    //const earnings=db.collection("users").doc('earning').collection("list").doc(String(date));
     Imurl.getDownloadURL().then(function(URL){
-    var col=db.collection("users").doc("menu").collection("ゲーム");
+    const col=db.collection("users").doc("menu").collection("ゲーム");
     col.get().then(snap=>{
-        var size=snap.size+1;
-        console.log(size)
+      var size=snap.size+1;
+      console.log(size)
     col.doc(String(size)).set({
       name:name,
       price:Number(price),
       url:URL,
       id:size
-    }).then((doc)=>{
+    }).then(()=>{
       alert('保存できました');
       console.log('success');
     }).catch((error)=>{
       console.log("failed");
     })    
-    }).catch(function(error){
+    }).catch((error)=>{
         console.log(error);
     });
     });
 }
 
 //写真選択タスク
-const _pickImage = async (item) => {
+const _pickImage = async () => {
 try{
-let result = await ImagePicker.launchImageLibraryAsync({
-  mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  allowsEditing: true,
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
     base64:true,
-  aspect: [4, 3],
-  quality: 1,
+    aspect: [4, 3],
+    quality: 1,
 });
   //撮影された（ローカルの）写真を取得 
   const localUri = await fetch(result.uri);
@@ -83,7 +84,7 @@ var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
   return (
     <View style={styles.wrapper}>
       
-      <Header navigation={props.navigation} name="アイテム編集" />
+      <Header navigation={props.navigation} name="アイテム登録" />
       <TouchableOpacity
        onPress={()=>_pickImage()}>
       <Image style={styles.img} source={image ?{uri:image}:null } 
