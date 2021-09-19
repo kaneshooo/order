@@ -14,10 +14,8 @@ import { firebase } from '@firebase/app';
 import 'firebase/storage'; 
 import 'firebase/firestore';
 
-
 export const UserCount = createContext();
 export const OrderData = createContext();
-
 
 let ItemNum = [];
 for (let i = 1; i <= 20; i++) {
@@ -25,11 +23,11 @@ for (let i = 1; i <= 20; i++) {
   ItemNum.push(item);
 }
 
-function OrderScreen({ navigation }) {
-
+function OrderScreen({ navigation,route}) {
+  
   const [orderNumber, setOrderNumber] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
-  const [item_list, setItemList] = useState([]);
+  const [item_list, setItemList] = useState({});
   const item={
     item_list,
     setItemList,
@@ -42,7 +40,8 @@ function OrderScreen({ navigation }) {
     totalAmount,
     setTotalAmount,
   }
-  console.log("item:"+item_list)
+  var date=route.params
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
@@ -54,14 +53,16 @@ function OrderScreen({ navigation }) {
         <View style={styles.orderItemList}>
           <FlatList
             numColumns={2}
-            data={item_list}
-            renderItem={({ item }) => (
+            data={Object.entries(item_list).map(([item,name])=>({item,name}))}
+            renderItem={( {item} ) => {
+              const name=item.name;
+              return (
               <View style={styles.orderRow}>
                 <Text style={styles.orderItemText}>
-                  {item.name} x {item.num}
+                  {name.name} x {name.num} 
                 </Text>
               </View>
-            )}
+            )}}
           ></FlatList>
         </View>
 
@@ -79,8 +80,7 @@ function OrderScreen({ navigation }) {
             style={styles.orderNumber}
             data={ItemNum}
             renderItem={({ item }) => (
-              <TouchableOpacity  
-              
+              <TouchableOpacity               
                 style={styles.item}
                 onPress={() => setOrderNumber(item.key)}
               >
@@ -90,7 +90,7 @@ function OrderScreen({ navigation }) {
           ></FlatList>
         </View>
       </View>
-      <UserCount.Provider value={{item,ordernum,amount}}>
+      <UserCount.Provider value={{item,ordernum,amount,date}}>
         <Footer navigation={navigation} />
       </UserCount.Provider>
 

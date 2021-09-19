@@ -36,6 +36,7 @@ function ListRoute(props) {
 }
 
 function SettingScreen(props) {
+   
   let [data, setData] = useState(0);
   const [index, setIndex] = useState(0);
   let routes = props.route.params.routes;
@@ -68,56 +69,58 @@ function SettingScreen(props) {
       return str;
     });
 
-    routes.forEach(function(category) {
-      classification.push(
-        result.filter(function(value) {
-          return value.categoryName == category.title;
-        })
-      );
-    });
-    setData(classification);
-  };
+routes.forEach(function(category) {
+  classification.push(
+    result.filter(function(value) {
+      return value.categoryName == category.title;
+    })
+  );
+});
+setData(classification);
+};
 
-  useEffect(() => {
-    dbget();
-  }, []);
+useEffect(()=>{
+dbget();
+},[])
 
-  const renderScene = ({ route }) => {
-    return <ListRoute data={data[route.key - 1]} navigation={navigation} />;
-  };
-  const initialLayout = { width: Dimensions.get("window").width };
-  const renderTabBar = props => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: "#e91e63" }}
-      style={{ backgroundColor: "white" }}
-      labelStyle={{ color: "black" }}
-      scrollEnabled={true}
-      tabStyle={{ width: 80 }}
+const renderScene = ({ route }) => {
+  return <ListRoute data={data[route.key - 1]} navigation={navigation} />;
+};
+const initialLayout = { width: Dimensions.get("window").width };
+const renderTabBar = props => (
+  <TabBar
+    {...props}
+    indicatorStyle={{ backgroundColor: "#e91e63" }}
+    style={{ backgroundColor: "white" }}
+    labelStyle={{ color: "black" }}
+    scrollEnabled={true}
+    tabStyle={{ width: 80 }}
+  />
+);
+
+return (
+  <View style={styles.wrapper}>
+    <Header navigation={navigation} name="アイテム管理" />
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={initialLayout}
+      renderTabBar={renderTabBar}
     />
-  );
-  return (
-    <View style={styles.wrapper}>
-      <Header navigation={navigation} name="アイテム管理" />
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={initialLayout}
-        renderTabBar={renderTabBar}
-      />
 
-      <TouchableOpacity onPress={() => navigation.navigate("Register", {})}>
-        <Icon
-          style={styles.add}
-          name="add-circle-sharp"
-          size={70}
-          color="#053050"
-        />
-      </TouchableOpacity>
-    </View>
-  );
+    <TouchableOpacity onPress={() => navigation.navigate("Register", {})}>
+      <Icon
+        style={styles.add}
+        name="add-circle-sharp"
+        size={70}
+        color="#053050"
+      />
+    </TouchableOpacity>
+  </View>
+);
 }
+
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -137,8 +140,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: "#FFF",
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   add: {
     position: "absolute",
@@ -173,31 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     padding: 1,
     borderRadius: 10
-  },
-  containerHeader: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  textContainer: {
-    marginTop: 70
-  },
-  textWhite: {
-    color: "black",
-    marginVertical: 10
-  },
-  tabContainer: {
-    backgroundColor: "white",
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    height: "20%",
-    alignItems: "center",
-    marginTop: 10,
-    height: 40
   }
 });
 
-export default SettingScreen;
+export default SettingScreen

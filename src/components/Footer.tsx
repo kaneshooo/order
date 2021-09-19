@@ -4,22 +4,14 @@ import Icon from "react-native-vector-icons/AntDesign";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import {OrderData, UserCount} from "../Screens/OrderScreen";
 import Datasubmit from "./Datasubmit";
-import Storage from 'react-native-storage';
-import { AsyncStorage } from 'react-native';
 
-var storage=new Storage({
-  size:1000,
-  storageBackend: AsyncStorage,
-  defaultExpires:null,
-  enableCache: true,
-})
 
 function Footer({ navigation }) {
 
-  const {item,ordernum,amount}=useContext(UserCount);
+  const {item,ordernum,amount,date}=useContext(UserCount);
   const [OrderDetail,setOrderList]=useState([]);
   const [state,setState]=useState(false);
-
+  
   const value={
     OrderDetail,
     setOrderList,
@@ -29,36 +21,23 @@ function Footer({ navigation }) {
     setState,
   }
   const confirm=()=>{
-    if(ordernum.orderNumber==undefined){
+    if(ordernum.orderNumber==''){
         Alert.alert(
-        'STOP',
-        '注文番号を入力してください',
-        [
-          {text: 'OK', onPress: () => {setState(false)}}
-        ],
-        { cancelable: false }
-      )
+          'STOP',
+          '注文番号を入力してください',
+          [
+            {text: 'OK', onPress: () => {setState(false)}}
+          ],
+          { cancelable: false }
+        )
     }
     else{
-      setState(true)}
+      setState(true)
     }
-  
-  storage.save({
-    key:'test',
-    data:{
-      hoge:OrderDetail,
-    }
-  })  
-  storage.load({
-    key:'test'
-  }).then(data=>{
-    console.log(data)
-  }).catch(err=>{
-    console.log(err);
-  })
+  }
   return (
     <View style={styles.wrapper}> 
-      <Datasubmit value={{ordernum,item,value,modal,amount}}/>
+      <Datasubmit value={{ordernum,item,value,modal,amount,date}}/>
 
       <View style={styles.container}>
         <TouchableOpacity
@@ -99,7 +78,7 @@ function Footer({ navigation }) {
 const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: "#fdfdfd",
-    height: 45
+    height: 45,
   },
   container: {
     flexDirection: "row",

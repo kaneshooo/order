@@ -6,6 +6,10 @@ import "firebase/storage";
 import "firebase/firestore";
 
 function HomeScreen({ navigation }) {
+  const [time,setdate]=useState<String>('')
+  const [state,setstate]=useState(false)
+  var date=new Date();
+
   let routes;
   const dbget = async () => {
     let db = firebase.firestore();
@@ -39,19 +43,22 @@ function HomeScreen({ navigation }) {
       <Text style={styles.title}>Home</Text>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#053050" }]}
-        onPress={() => navigation.navigate("Order")}
+        onPress={() =>{if(time===''){var when=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+                                      setdate(time),setstate(true)};
+                                      navigation.navigate("Order",when);}
+                                    }
       >
         <Text style={[styles.buttonSize, { color: "#FFF" }]}>Start</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#FFF" }]}
-        onPress={() => navigation.navigate("Log")}
+        onPress={() => navigation.navigate("Earning")}
       >
         <Text style={[styles.buttonSize, { color: "#053050" }]}>Log</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#999" }]}
-        onPress={() => navigation.navigate("Setting", { routes })}
+        onPress={() => navigation.navigate("Setting",{routes})}
       >
         <Text style={styles.buttonSize}>Setting</Text>
       </TouchableOpacity>
