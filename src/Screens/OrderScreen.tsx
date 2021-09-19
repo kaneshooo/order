@@ -10,9 +10,9 @@ import { Button, Divider } from "react-native-paper";
 import Footer from "../components/Footer";
 import ImgList from "../components/ImgList";
 import CostemerListScreen from "./CostemerListScreen";
-import { firebase } from '@firebase/app';
-import 'firebase/storage'; 
-import 'firebase/firestore';
+import { firebase } from "@firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
 
 export const UserCount = createContext();
 export const OrderData = createContext();
@@ -23,24 +23,24 @@ for (let i = 1; i <= 20; i++) {
   ItemNum.push(item);
 }
 
-function OrderScreen({ navigation,route}) {
-  
-  const [orderNumber, setOrderNumber] = useState('');
+function OrderScreen({ navigation, route }) {
+  const [orderNumber, setOrderNumber] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
   const [item_list, setItemList] = useState({});
-  const item={
+  const item = {
     item_list,
-    setItemList,
-  }
-  const ordernum={
+    setItemList
+  };
+  const ordernum = {
     orderNumber,
-    setOrderNumber,
-  }
-  const amount={
+    setOrderNumber
+  };
+  const amount = {
     totalAmount,
-    setTotalAmount,
-  }
-  var date=route.params
+    setTotalAmount
+  };
+  let routes = route.params.routes;
+  let date = route.params.when;
 
   return (
     <View style={styles.wrapper}>
@@ -53,16 +53,20 @@ function OrderScreen({ navigation,route}) {
         <View style={styles.orderItemList}>
           <FlatList
             numColumns={2}
-            data={Object.entries(item_list).map(([item,name])=>({item,name}))}
-            renderItem={( {item} ) => {
-              const name=item.name;
+            data={Object.entries(item_list).map(([item, name]) => ({
+              item,
+              name
+            }))}
+            renderItem={({ item }) => {
+              const name = item.name;
               return (
-              <View style={styles.orderRow}>
-                <Text style={styles.orderItemText}>
-                  {name.name} x {name.num} 
-                </Text>
-              </View>
-            )}}
+                <View style={styles.orderRow}>
+                  <Text style={styles.orderItemText}>
+                    {name.name} x {name.num}
+                  </Text>
+                </View>
+              );
+            }}
           ></FlatList>
         </View>
 
@@ -74,13 +78,14 @@ function OrderScreen({ navigation,route}) {
               item_list={item_list}
               setItemList={setItemList}
               orderNumber={orderNumber}
+              routes={routes}
             />
           </View>
           <FlatList
             style={styles.orderNumber}
             data={ItemNum}
             renderItem={({ item }) => (
-              <TouchableOpacity               
+              <TouchableOpacity
                 style={styles.item}
                 onPress={() => setOrderNumber(item.key)}
               >
@@ -90,13 +95,10 @@ function OrderScreen({ navigation,route}) {
           ></FlatList>
         </View>
       </View>
-      <UserCount.Provider value={{item,ordernum,amount,date}}>
+      <UserCount.Provider value={{ item, ordernum, amount, date }}>
         <Footer navigation={navigation} />
       </UserCount.Provider>
-
-
     </View>
-    
   );
 }
 

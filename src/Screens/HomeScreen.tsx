@@ -6,9 +6,9 @@ import "firebase/storage";
 import "firebase/firestore";
 
 function HomeScreen({ navigation }) {
-  const [time,setdate]=useState<String>('')
-  const [state,setstate]=useState(false)
-  var date=new Date();
+  const [time, setdate] = useState<String>("");
+  const [state, setstate] = useState(false);
+  var date = new Date();
 
   let routes;
   const dbget = async () => {
@@ -43,10 +43,18 @@ function HomeScreen({ navigation }) {
       <Text style={styles.title}>Home</Text>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#053050" }]}
-        onPress={() =>{if(time===''){var when=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
-                                      setdate(time),setstate(true)};
-                                      navigation.navigate("Order",when);}
-                                    }
+        onPress={() => {
+          if (time === "") {
+            var when =
+              date.getFullYear() +
+              "-" +
+              (date.getMonth() + 1) +
+              "-" +
+              date.getDate();
+            setdate(time), setstate(true);
+          }
+          navigation.navigate("Order", { when, routes });
+        }}
       >
         <Text style={[styles.buttonSize, { color: "#FFF" }]}>Start</Text>
       </TouchableOpacity>
@@ -58,7 +66,7 @@ function HomeScreen({ navigation }) {
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#999" }]}
-        onPress={() => navigation.navigate("Setting",{routes})}
+        onPress={() => navigation.navigate("Setting", { routes })}
       >
         <Text style={styles.buttonSize}>Setting</Text>
       </TouchableOpacity>

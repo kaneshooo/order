@@ -5,12 +5,34 @@ import {
   StyleSheet,
   FlatList,
   Text,
-  Button,
-  Image
+  Image,
+  Dimensions
 } from "react-native";
 import { firebase } from "@firebase/app";
 import "firebase/storage";
 import "firebase/firestore";
+import { TabView, ScrollPager, TabBar } from "react-native-tab-view";
+
+const ListRoute = props => {
+  const { data, setOrderInfo } = props;
+  return (
+    <FlatList
+      data={data}
+      numColumns={2}
+      keyExtractor={item => item.id}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => setOrderInfo(item)}
+        >
+          <Image style={styles.img} source={{ uri: item.url }} />
+          <Text>{item.name}</Text>
+          <Text>{item.price}円</Text>
+        </TouchableOpacity>
+      )}
+    ></FlatList>
+  );
+};
 
 const ImgList = props => {
   const {
@@ -18,33 +40,38 @@ const ImgList = props => {
     setTotalAmount,
     item_list,
     setItemList,
-    orderNumber
+    orderNumber,
+    routes
   } = props;
-  var db = firebase.firestore();
-  var date = new Date();
-  var today =
+
+  const [data, setData] = useState(0);
+  const [index, setIndex] = useState(0);
+  let db = firebase.firestore();
+  let date = new Date();
+  let today =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-  const [data, setdata] = useState();
+  let classification = [];
 
   const dbget = async () => {
     const docRef = db
       .collection("users")
       .doc("menu")
-      .collection("ゲーム");
+      .collection("商品");
     const earnings = db
       .collection("users")
       .doc("earning")
       .collection("list")
       .doc(String(today));
     const result = await docRef.get().then(querySnapshot => {
-      let bb = [];
+      let str = [];
       querySnapshot.forEach(doc => {
-        bb.push(
+        let categoryName = routes[doc.data().category - 1].title;
+        str.push(
           Object.assign({
             id: doc.id,
-            // page:pagename,
             url: doc.data().url,
             name: doc.data().name,
+            categoryName: categoryName,
             price: doc.data().price
           })
         );
@@ -58,27 +85,23 @@ const ImgList = props => {
           { merge: true }
         );
       });
-      return bb;
+      return str;
     });
-    setdata(result);
+    routes.forEach(function(category) {
+      classification.push(
+        result.filter(function(value) {
+          return value.categoryName == category.title;
+        })
+      );
+    });
+    setData(classification);
   };
-
   useEffect(() => {
     dbget();
   }, []);
 
-  const checkArray = (product_name, time) => {
-    let exist;
-    for (var i in item_list) {
-      if (item_list[i].name == product_name) {
-        item_list[i].num += 1;
-        exist = true;
-      }
-    }
-    return exist;
-  };
   const setOrderInfo = item => {
-    var time =
+    let time =
       date.getMonth() +
       1 +
       "-" +
@@ -91,8 +114,9 @@ const ImgList = props => {
       date.getSeconds() +
       "-" +
       date.getMilliseconds();
-    if (!checkArray(item.name, time)) {
+    if (!checkArray(item.id, time)) {
       item_list[time] = Object.assign({
+        id: item.id,
         name: item.name,
         num: 1,
         price: item.price,
@@ -100,28 +124,43 @@ const ImgList = props => {
         check: false
       });
     }
-    setTotalAmount(totalAmount + item.price);
+    setTotalAmount(Number(totalAmount) + Number(item.price));
   };
 
+  const checkArray = (product_id, time) => {
+    let exist;
+    for (let i in item_list) {
+      if (item_list[i].id == product_id) {
+        item_list[i].num += 1;
+        exist = true;
+      }
+    }
+    return exist;
+  };
+
+  const renderScene = ({ route }) => {
+    return <ListRoute data={data[route.key - 1]} setOrderInfo={setOrderInfo} />;
+  };
+
+  const initialLayout = { width: Dimensions.get("window").width };
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: "#e91e63" }}
+      style={{ backgroundColor: "white" }}
+      labelStyle={{ color: "black" }}
+      scrollEnabled={true}
+      tabStyle={{ width: 80 }}
+    />
+  );
   return (
-    <View>
-      <FlatList
-        style={styles.orderMenu}
-        data={data}
-        numColumns={2}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => setOrderInfo(item)}
-          >
-            <Image style={styles.img} source={{ uri: item.url }} />
-            <Text>{item.name}</Text>
-            <Text>{item.price}円</Text>
-          </TouchableOpacity>
-        )}
-      ></FlatList>
-    </View>
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={initialLayout}
+      renderTabBar={renderTabBar}
+    />
   );
 };
 const styles = StyleSheet.create({
