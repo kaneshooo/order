@@ -4,7 +4,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  Text
+  Text,
+  Alert
 } from "react-native";
 import { Button, Divider } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -68,10 +69,27 @@ function OrderScreen({ navigation, route }) {
   const deleteButton = item => {
     for (let i in item_list) {
       if (item_list[i].id == item.id) {
-        delete item_list[i];
+        Alert.alert(
+          "STOP",
+          "削除しますか？",
+          [
+            {
+              text: "Cancel"
+            },
+            {
+              text: "OK",
+              onPress: () => {
+                delete item_list[i];
+                setTotalAmount(
+                  Number(totalAmount) - Number(item.price) * item.num
+                );
+              }
+            }
+          ],
+          { cancelable: false }
+        );
       }
     }
-    setTotalAmount(Number(totalAmount) - Number(item.price) * item.num);
   };
 
   return (
