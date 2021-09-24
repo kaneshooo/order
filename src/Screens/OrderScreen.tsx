@@ -4,9 +4,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  Text
+  Text,
+  Alert
 } from "react-native";
 import { Button, Divider } from "react-native-paper";
+import Icon from "react-native-vector-icons/FontAwesome5";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import Footer from "../components/Footer";
 import ImgList from "../components/ImgList";
 import CostemerListScreen from "./CostemerListScreen";
@@ -27,6 +30,7 @@ function OrderScreen({ navigation, route }) {
   const [orderNumber, setOrderNumber] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
   const [item_list, setItemList] = useState({});
+  console.log(item_list);
   const item = {
     item_list,
     setItemList
@@ -42,6 +46,52 @@ function OrderScreen({ navigation, route }) {
   let routes = route.params.routes;
   let date = route.params.when;
 
+  const countMinus = item => {
+    for (let i in item_list) {
+      if (item_list[i].id == item.id) {
+        item_list[i].num -= 1;
+        console.log(item_list[i]);
+        if (item_list[i].num == 0) {
+          delete item_list[i];
+        }
+      }
+    }
+    setTotalAmount(Number(totalAmount) - Number(item.price));
+  };
+  const countPlus = item => {
+    for (let i in item_list) {
+      if (item_list[i].id == item.id) {
+        item_list[i].num += 1;
+      }
+    }
+    setTotalAmount(Number(totalAmount) + Number(item.price));
+  };
+  const deleteButton = item => {
+    for (let i in item_list) {
+      if (item_list[i].id == item.id) {
+        Alert.alert(
+          "STOP",
+          "削除しますか？",
+          [
+            {
+              text: "Cancel"
+            },
+            {
+              text: "OK",
+              onPress: () => {
+                delete item_list[i];
+                setTotalAmount(
+                  Number(totalAmount) - Number(item.price) * item.num
+                );
+              }
+            }
+          ],
+          { cancelable: false }
+        );
+      }
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
@@ -52,18 +102,40 @@ function OrderScreen({ navigation, route }) {
         <Divider style={styles.divider} />
         <View style={styles.orderItemList}>
           <FlatList
-            numColumns={2}
             data={Object.entries(item_list).map(([item, name]) => ({
               item,
               name
             }))}
             renderItem={({ item }) => {
               const name = item.name;
+              console.log(item);
+              console.log(name);
               return (
                 <View style={styles.orderRow}>
-                  <Text style={styles.orderItemText}>
-                    {name.name} x {name.num}
-                  </Text>
+                  <Text style={styles.orderItemText}>{name.name}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      countMinus(name);
+                    }}
+                  >
+                    <Icon name="minus" size={20} color="#73899d" />
+                  </TouchableOpacity>
+                  <Text style={styles.orderItemText}>x {name.num}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      countPlus(name);
+                    }}
+                  >
+                    <Icon name="plus" size={20} color="#73899d" />
+                  </TouchableOpacity>
+                  <Text>¥{name.price * name.num}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      deleteButton(name);
+                    }}
+                  >
+                    <AntDesign name="delete" size={20} color="#73899d" />
+                  </TouchableOpacity>
                 </View>
               );
             }}
@@ -126,7 +198,7 @@ const styles = StyleSheet.create({
     height: "8%"
   },
   orderRow: {
-    width: "50%",
+    flexDirection: "row",
     paddingLeft: 10
   },
   divider: {
