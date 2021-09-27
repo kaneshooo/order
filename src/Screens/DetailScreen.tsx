@@ -26,7 +26,7 @@ const [price, onChangePrice] = useState(item.price);
 const db=(Imurl)=>{
     var db=firebase.firestore();console.log(price)
     Imurl.getDownloadURL().then(function(URL){
-    db.collection("users").doc("menu").collection("ゲーム").doc(String(item.id)).set({
+    db.collection("users").doc(user).collection("menu").doc('商品').doc(String(item.id)).set({
       name:name,
       price:Number(price),
       url:URL

@@ -10,13 +10,16 @@ import TreasurerScreen from "./Screens/TreasurerScreen";
 import RegisterScreen from "./Screens/RegisterScreen";
 import CostemerListScreen from "./Screens/CostemerListScreen";
 import EarningScreen from "./Screens/EarningScreen";
+import SignInScreen from "./Screens/SignInScreen";
+import SignUpScreen from "./Screens/SignUpScreen";
+import SignOutScreen from "./Screens/SignOutScreen";
 import './firebase';
 
 const Stack = createNativeStackNavigator();
 function RootStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="SignIn"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
@@ -28,6 +31,9 @@ function RootStack() {
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="CostemerList" component={CostemerListScreen} />
       <Stack.Screen name="Earning" component={EarningScreen} />
+      <Stack.Screen name="SignIn" component={SignInScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="SignOut" component={SignOutScreen} />
     </Stack.Navigator>
   );
 }

@@ -26,20 +26,21 @@ import Header from "../components/Header";
 import CreateChart from "../components/Chart";
 
 export const Chart = createContext();
-
-function Earning({navigation}){
+function Earning({navigation,route}){
     var pro=[]
+    
     // const values=[]
     // const [data,setdata]=useState({labels:[] , 
     //           datasets:[{data:[]}]
     //         } )
     const [num,setnum]=useState(0)
     const [data,setdata]=useState([])
-    const [earn,setearn]=useState([0]) ;
-
+    const [earn,setearn]=useState(0) ;
+    let user=route.params.user
+    console.log(user)
     const getdata=async()=>{
         var db=firebase.firestore()
-        const erdoc=db.collection('users').doc('earning').collection('list')
+        const erdoc=db.collection('user').doc(user).collection('earn')
 
         await erdoc.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -60,9 +61,7 @@ function Earning({navigation}){
                 }
                 setdata(tmp)
                 // setdata({...data,labels:pro,datasets:[{data:values}]})
- 
-                
-                
+
                 //今日の売上
                 //日付指定日の売上
                 //区間指定の売上
@@ -74,8 +73,6 @@ function Earning({navigation}){
             });
         });
     }
-    
-   
 
     const getWidth =()=> {
         const deviceWidth = Dimensions.get('window').width
@@ -99,7 +96,6 @@ function Earning({navigation}){
         getdata()
         },[])
      getWidth()
-console.log(earn)
 
     return (
         <View>
@@ -111,8 +107,7 @@ console.log(earn)
                 </Chart.Provider> */}
                 <FlatList
                     style={styles.container}
-                    data={data}
-                  
+                    data={data}  
                     // keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <View style={styles.item}>

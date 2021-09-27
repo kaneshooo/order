@@ -14,6 +14,7 @@ import "firebase/firestore";
 import { TabView, ScrollPager, TabBar } from "react-native-tab-view";
 
 const ListRoute = props => {
+  console.log(props)
   const { data, setOrderInfo } = props;
   return (
     <FlatList
@@ -41,7 +42,8 @@ const ImgList = props => {
     item_list,
     setItemList,
     orderNumber,
-    routes
+    routes,
+    user
   } = props;
 
   const [data, setData] = useState(0);
@@ -53,14 +55,15 @@ const ImgList = props => {
   let classification = [];
 
   const dbget = async () => {
+    
     const docRef = db
-      .collection("users")
-      .doc("menu")
-      .collection("商品");
+    .collection("user")
+    .doc(user)
+    .collection("menu")
     const earnings = db
-      .collection("users")
-      .doc("earning")
-      .collection("list")
+      .collection('user')
+      .doc(user)
+      .collection("earn")
       .doc(String(today));
     const result = await docRef.get().then(querySnapshot => {
       let str = [];
@@ -80,13 +83,15 @@ const ImgList = props => {
             [doc.data().name]: {
               price: doc.data().price,
               num: 0
-            }
+            },
+            earn:0
           },
           { merge: true }
         );
       });
       return str;
     });
+if(routes!=0){
     routes.forEach(function(category) {
       classification.push(
         result.filter(function(value) {
@@ -95,11 +100,14 @@ const ImgList = props => {
       );
     });
     setData(classification);
+  }else{
+    setData(classification);
+  }
   };
   useEffect(() => {
     dbget();
   }, []);
-
+ 
   const setOrderInfo = item => {
     let time =
       date.getMonth() +
@@ -127,7 +135,7 @@ const ImgList = props => {
     setTotalAmount(Number(totalAmount) + Number(item.price));
   };
 
-  const checkArray = (product_id, time) => {
+  const checkArray = (product_id) => {
     let exist;
     for (let i in item_list) {
       if (item_list[i].id == product_id) {
@@ -138,10 +146,10 @@ const ImgList = props => {
     return exist;
   };
 
-  const renderScene = ({ route }) => {
+  const renderScene = ({ route }) => { 
     return <ListRoute data={data[route.key - 1]} setOrderInfo={setOrderInfo} />;
   };
-
+  
   const initialLayout = { width: Dimensions.get("window").width };
   const renderTabBar = props => (
     <TabBar

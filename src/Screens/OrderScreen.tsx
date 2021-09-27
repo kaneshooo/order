@@ -41,7 +41,7 @@ function OrderScreen({ navigation, route }) {
   };
   let routes = route.params.routes;
   let date = route.params.when;
-
+  let user=route.params.user
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
@@ -73,12 +73,14 @@ function OrderScreen({ navigation, route }) {
         <View style={styles.orderList}>
           <View style={styles.menu}>
             <ImgList
+              
               totalAmount={totalAmount}
               setTotalAmount={setTotalAmount}
               item_list={item_list}
               setItemList={setItemList}
               orderNumber={orderNumber}
               routes={routes}
+              user={user}
             />
           </View>
           <FlatList

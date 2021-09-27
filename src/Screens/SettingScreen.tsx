@@ -14,9 +14,10 @@ import "firebase/storage";
 import "firebase/firestore";
 import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../components/Header";
-import { TabView, ScrollPager, TabBar } from "react-native-tab-view";
+import { TabView, ScrollPager, TabBar,SceneMap } from "react-native-tab-view";
 
 function ListRoute(props) {
+
   return (
     <FlatList
       data={props.data}
@@ -41,20 +42,32 @@ function SettingScreen(props) {
   const [index, setIndex] = useState(0);
   let routes = props.route.params.routes;
   let navigation = props.navigation;
+  let user=props.route.params.user;
+  let check=props.route.params.check;
   let classification = [];
-
+console.log(props)
+  let db = firebase.firestore();
+  const FirstRoute = () => (
+      <View style={{ flex: 1, backgroundColor: 'grey'}}>
+        <Text>Tab One</Text>
+      </View>
+    );
+  if(check==true){
+    check=false
+  }
+  else{
+   
   const dbget = async () => {
-    let db = firebase.firestore();
     const docRef = db
-      .collection("users")
-      .doc("menu")
-      .collection("商品");
+    .collection("user")
+    .doc(user)
+    .collection("menu")
 
-    const result = await docRef.get().then(querySnapshot => {
+    const result = await docRef.get().then(function(querySnapshot){
       let str = [];
       querySnapshot.forEach(doc => {
         console.log(doc.data().category);
-        let categoryName = routes[doc.data().category - 1].title;
+        let categoryName = routes[doc.data().category-1 ].title;
         console.log(categoryName);
         str.push(
           Object.assign({
@@ -78,14 +91,20 @@ routes.forEach(function(category) {
 });
 setData(classification);
 };
-
+  
 useEffect(()=>{
 dbget();
 },[])
-
+ }
 const renderScene = ({ route }) => {
+  if(check==false){
   return <ListRoute data={data[route.key - 1]} navigation={navigation} />;
-};
+}else{
+  return SceneMap({
+    first: FirstRoute,
+  })  
+}
+}; 
 const initialLayout = { width: Dimensions.get("window").width };
 const renderTabBar = props => (
   <TabBar
@@ -109,7 +128,7 @@ return (
       renderTabBar={renderTabBar}
     />
 
-    <TouchableOpacity onPress={() => navigation.navigate("Register", {})}>
+    <TouchableOpacity onPress={() => navigation.navigate("Register", {user})}>
       <Icon
         style={styles.add}
         name="add-circle-sharp"
