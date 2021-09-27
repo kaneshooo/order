@@ -16,36 +16,42 @@ import {
 import Header from "../components/Header";
 
 function DetailScreen(props) {
-
+console.log(props)
+let user=props.route.params.user
 
 const [image,setImage]=useState();
 const [File,setFile]=useState();
 const [name, onChangeText] = useState('');
 const [price, onChangePrice] = useState();
-
-const db=(Imurl)=>{
+const [category, oncategory] = useState('');
+const db=async(Imurl)=>{
+  let size;
     var db=firebase.firestore();
-    //const earnings=db.collection("users").doc('earning').collection("list").doc(String(date));
-    Imurl.getDownloadURL().then(function(URL){
-    const col=db.collection("users").doc("menu").collection("ゲーム");
-    col.get().then(snap=>{
-      var size=snap.size+1;
-      console.log(size)
+    const col=db.collection("user").doc(String(user)).collection("menu");
+    await col.get().then(snap=>{
+   Imurl.getDownloadURL().then(function(URL){
+   if (!snap.exists) {
+    console.log('No such document!');
+    size=1
+    } else {
+      size=snap.size+1;    
+  }
+
     col.doc(String(size)).set({
       name:name,
       price:Number(price),
       url:URL,
-      id:size
+      id:size,
+      category: category
     }).then(()=>{
       alert('保存できました');
       console.log('success');
     }).catch((error)=>{
       console.log("failed");
     })    
-    }).catch((error)=>{
-        console.log(error);
+    
     });
-    });
+  })
 }
 
 //写真選択タスク
@@ -103,6 +109,13 @@ var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
         onChangeText={text=>onChangePrice(text)}
         value={price}
         placeholder="値段"
+        mode="outlined"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={text=>oncategory(text)}
+        value={category}
+        placeholder="カテゴリー"
         mode="outlined"
       />
       <Button mode="contained" title="保存"  onPress={()=> approad()} type='file'/>

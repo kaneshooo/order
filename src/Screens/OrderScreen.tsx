@@ -46,6 +46,7 @@ function OrderScreen({ navigation, route }) {
   let routes = route.params.routes;
   let date = route.params.when;
 
+
   const countMinus = item => {
     for (let i in item_list) {
       if (item_list[i].id == item.id) {
@@ -91,6 +92,9 @@ function OrderScreen({ navigation, route }) {
       }
     }
   };
+
+
+  let user=route.params.user
 
   return (
     <View style={styles.wrapper}>
@@ -145,12 +149,14 @@ function OrderScreen({ navigation, route }) {
         <View style={styles.orderList}>
           <View style={styles.menu}>
             <ImgList
+              
               totalAmount={totalAmount}
               setTotalAmount={setTotalAmount}
               item_list={item_list}
               setItemList={setItemList}
               orderNumber={orderNumber}
               routes={routes}
+              user={user}
             />
           </View>
           <FlatList
