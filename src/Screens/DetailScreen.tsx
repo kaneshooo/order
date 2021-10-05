@@ -14,35 +14,68 @@ import {
   Image
 } from "react-native";
 import Header from "../components/Header";
+import ErrorMessage from "../components/ErrorMessage";
 
 function DetailScreen(props) {
-console.log(props)
-const item = props.route.params.item;
-const [image,setImage]=useState();
-const [File,setFile]=useState();
-const [name, onChangeText] = useState(item.name);
-const [price, onChangePrice] = useState(item.price);
+  console.log(props)
+  let item = props.route.params.item;
+  let user = props.route.params.user;
+  let routes = props.route.params.routes;
+  let navigation=props.navigation
+  const [image,setImage]=useState();
+  const [File,setFile]=useState();
+  const [name, onChangeText] = useState(item.name);
+  const [price, onChangePrice] = useState(item.price);
+  const [category, oncategory] = useState(item.category);
+  let db=firebase.firestore();
+  const colref=db.collection("user").doc(user).collection("menu")
 
-const db=(Imurl)=>{
-    var db=firebase.firestore();console.log(price)
-    Imurl.getDownloadURL().then(function(URL){
-    db.collection("users").doc(user).collection("menu").doc('商品').doc(String(item.id)).set({
-      name:name,
-      price:Number(price),
-      url:URL
-    }).then((doc)=>{
-      alert('保存できました');
-      console.log('success');
-    }).catch((error)=>{
-      console.log("failed");
-    })    
-    }).catch(function(error){
+  const dbget=async(Imurl)=>{
+    let count=routes.length;
+    let length;
+    const col=db.collection("user").doc(user).collection("menu").doc(String(category))
+    await col.get().then(snap=>{
+      Imurl.getDownloadURL().then(function(URL){
+        if(!snap.exists){
+          length=1
+        }else{
+          length=(Object.keys(snap.data()).length)+1    
+        }
+      col.set({
+        [length]:{
+          name:name,
+          price:Number(price),
+          url:URL,
+          category:category,
+          id:length
+        }
+      },{merge:true}).then(()=>{
+        alert('保存できました');
+        if(!routes.some((item)=>item.title==category)){
+          console.log
+          routes.push(
+            Object.assign({
+              key: count,
+              title: category
+            })
+          )
+        }
+        if(item.category!=category){
+          db.collection("user").doc(user).collection("menu").doc(String(item.category)).update({
+            [item.id]:firebase.firestore.FieldValue.delete()
+          })
+        }
+      }).catch((error)=>{
         console.log(error);
-    });
-}
+      })    
+      }).catch(function(error){
+          console.log(error);
+      });
+    })
+  }
 
 //写真選択タスク
-const _pickImage = async (item) => {
+const _pickImage = async () => {
 try{
 let result = await ImagePicker.launchImageLibraryAsync({
   mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -63,26 +96,60 @@ if (!result.cancelled) {
     return false;
 }};
 
-//アップロードタスク
-const approad=()=>{  
-var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
 
+//アップロードタスク
+const uproad=()=>{  
+var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
     mountainsref.put(File).then(function(snapshot){
-    db(mountainsref);
+    dbget(mountainsref);
     }).catch(function(error){
         console.log(error);
     }
 );}
 
+const del=async()=>{
+  const col=db.collection("user").doc(user).collection("menu").doc(String(category))
+  await col.get().then((doc)=>{
+    let str;
+    str=Object.keys(doc.data()).length
+    console.log(str)
+    if(str==1){
+      col.delete()
+      .then(async()=>{
+        let tmp=routes.findIndex(element=>element.title==category)
+        routes.splice(tmp,1)
+        console.log(routes)
+         alert('削除できました')
+      })
+      let checker={name,price,category,image}
+      navigation.navigate('Setting', { routes,checker ,user})
+    }
+    else{
+      col.update({
+        [item.id]:firebase.firestore.FieldValue.delete()
+      })
+      .then(async()=>{
+        alert('削除できました')
+      })
+      let checker={name,price,category,image}
+      navigation.navigate('Setting', { routes,checker ,user})
+    }
+
+  }).catch((error)=>{
+    console.log(error)
+  })
+}
+
   return (
     <View style={styles.wrapper}>
       
-      <Header navigation={props.navigation} name="アイテム編集" />
+      <Header navigation={navigation} name="アイテム編集" route={routes} user={user} value="Setting" checker={{name,price,image}}/>
       <TouchableOpacity
        onPress={()=>_pickImage()}>
       <Image style={styles.img} source={image ?{uri:image}:null } 
       />
       </TouchableOpacity>
+      <View>
       <TextInput
         style={styles.input}
         onChangeText={text=>onChangeText(text)}
@@ -90,7 +157,9 @@ var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
         value={name}
         mode="outlined"
       />
-      
+      </View>
+      <ErrorMessage name={name} typedText={name}/>
+      <View>
       <TextInput
         style={styles.input}
         onChangeText={text=>onChangePrice(text)}
@@ -98,7 +167,20 @@ var mountainsref=firebase.storage().ref().child('images/'+name+'.jpg');
         value={price}
         mode="outlined"
       />
-      <Button mode="contained" title="保存"  onPress={()=> approad()} type='file'/>
+      </View>
+      <ErrorMessage name={price} typedText={price}/>
+      <View>
+       <TextInput
+        style={styles.input}
+        onChangeText={text=>oncategory(text)}
+        defaultValue={item.category}
+        value={category}
+        mode="outlined"
+      />
+      </View>
+      <ErrorMessage name={category} typedText={category}/>
+      <Button mode="contained" title="保存"  onPress={()=> uproad()} type='file'/>
+      <Button mode="contained" title="削除"  onPress={()=> del()} type='file'/>
     </View>
   );
 }

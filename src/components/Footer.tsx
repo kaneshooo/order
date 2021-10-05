@@ -8,10 +8,10 @@ import Datasubmit from "./Datasubmit";
 
 function Footer({ navigation }) {
 
-  const {item,ordernum,amount,date}=useContext(UserCount);
+  const {item,ordernum,amount,date,route}=useContext(UserCount);
   const [OrderDetail,setOrderList]=useState([]);
   const [state,setState]=useState(false);
-  
+  route.name='Order'
   const value={
     OrderDetail,
     setOrderList,
@@ -20,6 +20,7 @@ function Footer({ navigation }) {
     state,
     setState,
   }
+  console.log("aaaaaaaaaaaaa",item)
   const confirm=()=>{
     if(ordernum.orderNumber==''){
         Alert.alert(
@@ -37,7 +38,7 @@ function Footer({ navigation }) {
   }
   return (
     <View style={styles.wrapper}> 
-      <Datasubmit value={{ordernum,item,value,modal,amount,date}}/>
+      <Datasubmit value={{ordernum,item,value,modal,amount,date,route}}/>
 
       <View style={styles.container}>
         <TouchableOpacity
@@ -50,21 +51,14 @@ function Footer({ navigation }) {
         
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.popToTop()}
+          onPress={() => navigation.navigate("Home",{route})}
         >
           <Icon name="home" size={20} color="#73899d" />
           <Text style={styles.footerText}>販売終了</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("Treasurer")}
-        >
-          <Icon name="pay-circle-o1" size={20} color="#73899d" />
-          <Text style={styles.footerText}>会計</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("CostemerList")}
+          onPress={() => navigation.navigate("CostemerList",{route})}
         >
           <Icon name="pay-circle-o1" size={20} color="#73899d" />
           <Text style={styles.footerText}>顧客管理</Text>
@@ -79,6 +73,7 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: "#fdfdfd",
     height: 45,
+    marginBottom:20
   },
   container: {
     flexDirection: "row",

@@ -13,6 +13,7 @@ import EarningScreen from "./Screens/EarningScreen";
 import SignInScreen from "./Screens/SignInScreen";
 import SignUpScreen from "./Screens/SignUpScreen";
 import SignOutScreen from "./Screens/SignOutScreen";
+import TableScreen from "./Screens/TableScreen";
 import './firebase';
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +35,7 @@ function RootStack() {
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="SignOut" component={SignOutScreen} />
+      <Stack.Screen name="Table" component={TableScreen} />
     </Stack.Navigator>
   );
 }

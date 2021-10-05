@@ -45,7 +45,7 @@ const ImgList = props => {
     routes,
     user
   } = props;
-
+console.log('routes',routes)
   const [data, setData] = useState(0);
   const [index, setIndex] = useState(0);
   let db = firebase.firestore();
@@ -55,7 +55,6 @@ const ImgList = props => {
   let classification = [];
 
   const dbget = async () => {
-    
     const docRef = db
     .collection("user")
     .doc(user)
@@ -65,37 +64,44 @@ const ImgList = props => {
       .doc(user)
       .collection("earn")
       .doc(String(today));
+      
     const result = await docRef.get().then(querySnapshot => {
       let str = [];
+      let key=[];
       querySnapshot.forEach(doc => {
-        let categoryName = routes[doc.data().category - 1].title;
+        key=Object.keys(doc.data())
+        key.map((item)=>{
+          console.log(item)
         str.push(
           Object.assign({
             id: doc.id,
-            url: doc.data().url,
-            name: doc.data().name,
-            categoryName: categoryName,
-            price: doc.data().price
+            url: doc.data()[item].url,
+            name: doc.data()[item].name,
+            category: doc.data()[item].category,
+            price: doc.data()[item].price
           })
         );
+      console.log(str)
         earnings.set(
           {
-            [doc.data().name]: {
-              price: doc.data().price,
-              num: 0
+            [doc.data()[item].name]: {
+              price: doc.data()[item].price,
+              num: firebase.firestore.FieldValue.increment(0)
             },
-            earn:0
+            earn:firebase.firestore.FieldValue.increment(0)
           },
           { merge: true }
         );
+        })
       });
+ 
       return str;
     });
 if(routes!=0){
     routes.forEach(function(category) {
       classification.push(
         result.filter(function(value) {
-          return value.categoryName == category.title;
+          return value.category == category.title;
         })
       );
     });
@@ -104,9 +110,18 @@ if(routes!=0){
     setData(classification);
   }
   };
+
   useEffect(() => {
-    dbget();
-  }, []);
+    let isMounted = true; // note this flag denote mount status
+    dbget().then(data=>{
+      if(isMounted){
+       console.log(data)
+      }
+    })
+    return()=>{
+      isMounted=false;
+    }
+  },[]);
  
   const setOrderInfo = item => {
     let time =
@@ -147,7 +162,7 @@ if(routes!=0){
   };
 
   const renderScene = ({ route }) => { 
-    return <ListRoute data={data[route.key - 1]} setOrderInfo={setOrderInfo} />;
+    return <ListRoute data={data[route.key]} setOrderInfo={setOrderInfo} />;
   };
   
   const initialLayout = { width: Dimensions.get("window").width };

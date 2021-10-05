@@ -45,8 +45,8 @@ function OrderScreen({ navigation, route }) {
   };
   let routes = route.params.routes;
   let date = route.params.when;
-
-
+  let user=route.params.user;
+console.log(route)
   const countMinus = item => {
     for (let i in item_list) {
       if (item_list[i].id == item.id) {
@@ -92,9 +92,6 @@ function OrderScreen({ navigation, route }) {
       }
     }
   };
-
-
-  let user=route.params.user
 
   return (
     <View style={styles.wrapper}>
@@ -173,7 +170,7 @@ function OrderScreen({ navigation, route }) {
           ></FlatList>
         </View>
       </View>
-      <UserCount.Provider value={{ item, ordernum, amount, date }}>
+      <UserCount.Provider value={{ item, ordernum, amount, date,route }}>
         <Footer navigation={navigation} />
       </UserCount.Provider>
     </View>
@@ -184,7 +181,8 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     paddingTop: 30,
-    backgroundColor: "#FFF"
+    backgroundColor: "#FFF",
+    marginTop:15
   },
   container: {
     flex: 1

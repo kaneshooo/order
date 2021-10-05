@@ -11,71 +11,57 @@ function HomeScreen({ navigation,route }) {
   const [check, setcheck] = useState(false);
   const [routes, setroutes] = useState();
   let date = new Date();
-  let user=route.params.user.user.uid;
+  let user;
 
-  console.log(user)
+  if(route.params.name=='Signin'){
+    user=route.params.user.user.uid;
+  }else{
+    user=route.params.route.params.user
+  }
   let db = firebase.firestore();
 
   const dbget =async() => {
-   const checkdoc=await db.collection('user').doc(user).get();
-    if(!checkdoc.exists){
-    db.collection('user').doc(user).set({name:user})
-    setstate(true)
-    setcheck(true)
-    let tmp=[{key:0,title:''}]
-    setroutes(tmp)
-  }else{
-    setcheck(false)
-    setstate(false)
-    const categoryRef = db
+   const checkdoc=await db.collection('user').doc(user).collection("menu").get();
+   console.log(checkdoc.size)
+   //新規設定をするか否か
+    if(checkdoc.size==0){
+      db.collection('user').doc(user).set({name:user})
+      setcheck(true)
+      let tmp=[{key:0,title:'+'}]
+      setroutes(tmp)
+    }else{
+      setcheck(false)
+      setstate(false)
+      const categoryRef = db
       .collection('user')
       .doc(user)
       .collection("menu")
 
-    const result = await categoryRef.get().then(querySnapshot => {
-      let str = [];
-      querySnapshot.forEach(doc => {
-        console.log(doc.data().name)
-        str.push(
-          Object.assign({
-            key: doc.id,
-            title: doc.data().name
-          })
-        );
+      const result = await categoryRef.get().then(querySnapshot => {
+        let str = [];
+        let key=[];
+        let count=0;
+        querySnapshot.forEach(doc => {
+          key.push(doc.id)
+          str.push(
+            Object.assign({
+              key: count,
+              title: doc.id
+            })
+          );
+          count++;
+        })
+        return str;
       });
-      return str;
-    });
-    setroutes(result);
-  }
-};console.log(routes);
-  // const dbget = async () => {
-  //   let db = firebase.firestore();
-  //   const categoryRef = db
-  //     .collection("users")
-  //     .doc("menu")
-  //     .collection("カテゴリー名");
-
-  //   const result = await categoryRef.get().then(querySnapshot => {
-  //     let str = [];
-  //     querySnapshot.forEach(doc => {
-  //       str.push(
-  //         Object.assign({
-  //           key: doc.id,
-  //           title: doc.data().name
-  //         })
-  //       );
-  //     });
-
-  //     return str;
-  //   });
-  //   routes = result;
-  //   console.log(routes);
-  // };
+      console.log(result)
+      setroutes(result);
+    }
+  };
   useEffect(() => {
     dbget();
   }, []);
-  
-    
+  console.log(routes)
+  console.log(check)
   return (
     <View style={styles.wrapper}>
       <Text style={styles.title}>Home</Text>
@@ -104,11 +90,16 @@ function HomeScreen({ navigation,route }) {
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#999" }]}
-        onPress={() => navigation.navigate("Setting", { routes,user,check })}
+        onPress={() => navigation.navigate("Setting",  {user,routes,check} )}
       >
         <Text style={styles.buttonSize}>Setting</Text>
       </TouchableOpacity>
-   
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#999" }]}
+        onPress={() => navigation.navigate("Table",  {user,check} )}
+      >
+        <Text style={styles.buttonSize}>Table</Text>
+      </TouchableOpacity>
     <Modal
       visible={modalstate}
       animationType="slide"
@@ -119,7 +110,6 @@ function HomeScreen({ navigation,route }) {
     <View style={styles.modalView}>
     <Text style={styles.ordernumfont}>新規設定</Text>
       <Pressable onPress={() => {navigation.navigate("Setting", { routes,user,check }),setstate(false)}}  style={styles.button}><Text　style={styles.textStyle}>新規設定へ</Text></Pressable>
-             
     </View>
     </View>
     </Modal>

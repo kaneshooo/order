@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, View, Text, SafeAreaView, StyleSheet, TextInput, Alert } from "react-native";
+import { Button, View, Text, SafeAreaView,Dimensions, StyleSheet, TextInput, Alert ,KeyboardAvoidingView,TouchableOpacity } from "react-native";
 import { firebase } from "@firebase/app";
 // import { useDispatch } from "react-redux"
 // import { signInAction } from '../redux/users/Action';
@@ -7,6 +7,7 @@ import { jpCheck, blankCheck, checkEmailFormat } from "../util/index"
 import ErrorMessage from "../components/ErrorMessage"
 import "firebase/auth";
 import 'firebase/firestore';
+const deviceHeight = Dimensions.get('window').height
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -47,13 +48,15 @@ const SignUpScreen = ({ navigation }) => {
       }
    }
   return (
-    <SafeAreaView>
-        <View>
-           <Text style={{ fontSize: 20 }}>アカウント登録</Text>
+   <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <SafeAreaView >
+    <View style={styles.header}>
+          <Text style={styles.headerText}>アカウント登録</Text>
         </View>
-        <View>
+        <View style={styles.wrap}>
            <View>
               <TextInput
+              style={styles.inputStyle}
                  placeholder="メールアドレス"
                  autoCapitalize='none'
                  onChangeText={setEmail}
@@ -62,6 +65,7 @@ const SignUpScreen = ({ navigation }) => {
            <ErrorMessage email={email} typedText={email} />
            <View>
               <TextInput
+              style={styles.inputStyle}
                  placeholder="パスワード"
                  type="password"
                  secureTextEntry={true}
@@ -71,6 +75,7 @@ const SignUpScreen = ({ navigation }) => {
            <ErrorMessage password={password} typedText={password} />
            <View>
               <TextInput
+              style={styles.inputStyle}
                  placeholder="確認用パスワード"
                  type="confirmPassword"
                  secureTextEntry={true}
@@ -78,13 +83,12 @@ const SignUpScreen = ({ navigation }) => {
               />
            </View>
            <ErrorMessage password={password} confirmPassword={confirmPassword} typedText={confirmPassword} />
-             <View>
-                <Button
-                   title="送信"
-                   onPress={() => signUp(email, password)}
-                />
-            </View>
-                <View>
+           <View >
+            <TouchableOpacity onPress={() => signUp(email, password)}  style={[styles.button, { backgroundColor: "#053050" }]}>
+            <Text style={[styles.buttonSize, { color: "white" }]}>登録</Text>   
+            </TouchableOpacity>
+          </View>
+                <View style={styles.Text}>
                    <View>
                       <Text>・全ての項目を入力してください。</Text>
                    </View>
@@ -109,6 +113,73 @@ const SignUpScreen = ({ navigation }) => {
             </View>
          </View>
       </SafeAreaView>
+      </KeyboardAvoidingView>
    )
 }
+
+const styles=StyleSheet.create({
+   wrap: {
+   height:deviceHeight-100,
+     padding: 1,
+     backgroundColor:'linen',
+     borderRadius: 10,
+     borderWidth: 1,
+     borderColor: "ivory",
+     overflow: "hidden",
+     alignItems: "center",
+     justifyContent: "center",
+   },
+   Text: {
+      fontSize: 18,
+      marginTop: 5,
+      color: "#73899d"
+    },
+    inputStyle: {
+      color: '#000',
+      paddingRight: 7,
+      paddingLeft: 7,
+      fontSize: 18,
+      lineHeight: 25,
+      width:350,
+      height: 40,
+      borderRadius: 10,
+      borderWidth: 2,
+      borderColor: '#333',
+   },
+   header: {
+     flexDirection: "row",
+     alignItems: "center",
+     justifyContent: "center",
+     paddingLeft: 5,
+     height: 60,
+     backgroundColor:"#053050"
+   },
+ 
+   headerText: {
+     fontSize: 25,
+     fontWeight: "700",
+     color: "white"
+   },
+   guide:{
+     fontSize:17,
+     fontWeight: "600",
+     color: "#053050",
+     alignItems: "center",
+     justifyContent: "center",
+     
+   },
+   buttonSize: {
+     fontSize: 30,
+     fontWeight: "500"
+   },
+   button: {
+     fontSize: 30,
+     width: 350,
+     height: 55,
+     borderRadius: 10,
+     alignItems: "center",
+     justifyContent: "center",
+     margin: 10
+   },
+ })
 export default SignUpScreen

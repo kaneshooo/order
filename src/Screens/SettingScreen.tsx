@@ -16,8 +16,11 @@ import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../components/Header";
 import { TabView, ScrollPager, TabBar,SceneMap } from "react-native-tab-view";
 
-function ListRoute(props) {
 
+function ListRoute(props) {
+  console.log(props)
+  let user=props.value.user
+  let routes=props.value.routes
   return (
     <FlatList
       data={props.data}
@@ -26,7 +29,7 @@ function ListRoute(props) {
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.item}
-          onPress={() => props.navigation.navigate("Detail", { item })}
+          onPress={() => props.navigation.navigate("Detail", { item ,user,routes})}
         >
           <Image style={styles.img} source={{ uri: item.url }} />
           <Text>{item.name}</Text>
@@ -37,25 +40,17 @@ function ListRoute(props) {
 }
 
 function SettingScreen(props) {
-   
-  let [data, setData] = useState(0);
+      console.log(props)
+  const [data, setData] = useState(0);
   const [index, setIndex] = useState(0);
+
+  let checker=props.route.params.checker
   let routes = props.route.params.routes;
   let navigation = props.navigation;
   let user=props.route.params.user;
-  let check=props.route.params.check;
   let classification = [];
-console.log(props)
+
   let db = firebase.firestore();
-  const FirstRoute = () => (
-      <View style={{ flex: 1, backgroundColor: 'grey'}}>
-        <Text>Tab One</Text>
-      </View>
-    );
-  if(check==true){
-    check=false
-  }
-  else{
    
   const dbget = async () => {
     const docRef = db
@@ -63,47 +58,44 @@ console.log(props)
     .doc(user)
     .collection("menu")
 
-    const result = await docRef.get().then(function(querySnapshot){
-      let str = [];
-      querySnapshot.forEach(doc => {
-        console.log(doc.data().category);
-        let categoryName = routes[doc.data().category-1 ].title;
-        console.log(categoryName);
+  const result = await docRef.get().then(function(querySnapshot){
+    let str = [];
+    let key=[];
+    querySnapshot.forEach(doc => {
+      key=Object.keys(doc.data())
+      key.map((item)=>{
         str.push(
-          Object.assign({
-            id: doc.id,
-            url: doc.data().url,
-            name: doc.data().name,
-            categoryName: categoryName,
-            price: doc.data().price
+          Object.assign({          
+              id:doc.data()[item].id,
+              category:doc.data()[item].category,
+              name:doc.data()[item].name,
+              price:doc.data()[item].price,
+              url:doc.data()[item].url,        
           })
-        );
-      });
-      return str;
+        )
+      })
     });
+    return str;
+  });
 
 routes.forEach(function(category) {
   classification.push(
     result.filter(function(value) {
-      return value.categoryName == category.title;
+      return value.category == category.title;
     })
   );
 });
+console.log(classification)
+console.log(result)
 setData(classification);
 };
   
 useEffect(()=>{
-dbget();
-},[])
- }
+  dbget();
+},[checker])
+ 
 const renderScene = ({ route }) => {
-  if(check==false){
-  return <ListRoute data={data[route.key - 1]} navigation={navigation} />;
-}else{
-  return SceneMap({
-    first: FirstRoute,
-  })  
-}
+  return <ListRoute data={data[route.key]} navigation={navigation} value={{user,routes}} />;
 }; 
 const initialLayout = { width: Dimensions.get("window").width };
 const renderTabBar = props => (
@@ -114,6 +106,11 @@ const renderTabBar = props => (
     labelStyle={{ color: "black" }}
     scrollEnabled={true}
     tabStyle={{ width: 80 }}
+    // onTabPress={({route,preventDefault})=>{
+    //   if(route.title=='+'){
+    //     console.log('AAAAAAAAAAA')
+    //   }
+    // }}
   />
 );
 
@@ -128,7 +125,7 @@ return (
       renderTabBar={renderTabBar}
     />
 
-    <TouchableOpacity onPress={() => navigation.navigate("Register", {user})}>
+    <TouchableOpacity onPress={() => navigation.navigate("Register", {user,routes})}>
       <Icon
         style={styles.add}
         name="add-circle-sharp"

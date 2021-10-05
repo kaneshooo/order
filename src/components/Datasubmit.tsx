@@ -5,7 +5,7 @@ import 'firebase/storage';
 import 'firebase/firestore';
 
 function Datasubmit(props){
-
+console.log(props)
   const state=props.value.modal.state;
   const setState=props.value.modal.setState;
   const item_list=props.value.item.item_list;
@@ -17,8 +17,8 @@ function Datasubmit(props){
   const setTotalAmount=props.value.amount.setTotalAmount;
   const TotalAmount=props.value.amount.totalAmount;
   const date=props.value.date;
-
-
+  const user=props.value.route.params.user
+  
   const closeModal=()=> {
       setState(false);
     } 
@@ -29,7 +29,7 @@ function Datasubmit(props){
       [
         {text: 'OK', onPress: () => {
           setState(false),
-          setItemList([]),
+          setItemList({}),
           setOrderNumber(''),
           setTotalAmount(0)}
         }
@@ -37,15 +37,13 @@ function Datasubmit(props){
     )
   }
   const dataset=()=>{
-    var db=firebase.firestore();
-    const docref=db.collection("users").doc("order").collection("list").doc(String(orderNumber));      
-    const earnings=db.collection("users").doc('earning').collection("list").doc(String(date));
+    let db=firebase.firestore();
+    const docref=db.collection("user").doc(user).collection("order").doc(String(orderNumber));      
+    const earnings=db.collection("user").doc(user).collection('earn').doc(String(date));
+    console.log(item_list)
     docref.set({
       orderlist:item_list,
       fee:firebase.firestore.FieldValue.increment(TotalAmount)
-    },{merge:true}),
-    earnings.set({
-      earn:firebase.firestore.FieldValue.increment(TotalAmount)
     },{merge:true})
     .then(()=>{
       submit()

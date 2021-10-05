@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import {jpCheck, blankCheck, checkEmailFormat,} from '../util/index';
+import {jpCheck, blankCheck, checkEmailFormat,blankCheckConfirmPassword} from '../util/index';
 
-const ErrorMessage = ({ email, password, confirmPassword, typedText }) => {
+const ErrorMessage = ({ email, password, confirmPassword, typedText ,name,category,price}) => {
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
     const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] = useState('');
-
     useEffect(() => {
         const isJapanese = jpCheck(email);
         const isBlankEmail = blankCheck(email);
@@ -31,6 +30,33 @@ const ErrorMessage = ({ email, password, confirmPassword, typedText }) => {
         }
     }, [password]);
 
+    useEffect(() => {
+        const isBlankPassword = blankCheck(name);
+        if (isBlankPassword) {
+            setPasswordErrorMessage('必須項目です。入力してください');
+        } else {
+            setPasswordErrorMessage('');
+        }
+    }, [name]);
+
+    useEffect(() => {
+        const isBlankPassword = blankCheck(price);
+        if (isBlankPassword) {
+            setPasswordErrorMessage('必須項目です。入力してください');
+        } else {
+            setPasswordErrorMessage('');
+        }
+    }, [price]);
+
+    useEffect(() => {
+        const isBlankPassword = blankCheck(category);
+        if (isBlankPassword) {
+            setPasswordErrorMessage('必須項目です。入力してください');
+        } else {
+            setPasswordErrorMessage('');
+        }
+    }, [category]);
+
     // useEffect(() => {
     //     const isBlankPassword = blankCheckConfirmPassword(confirmPassword);
     //     if (isBlankPassword) {
@@ -43,7 +69,7 @@ const ErrorMessage = ({ email, password, confirmPassword, typedText }) => {
     // }, [confirmPassword]);
 
 
-    if (typedText === password) {
+    if (typedText === password||typedText === name||typedText === category||typedText === price) {
         return (
             <View>
                 <Text style={styles.text}>
@@ -79,9 +105,9 @@ const styles = StyleSheet.create({
     text: {
       color: "#053050",
       fontWeight: "700",
-      fontSize: 70,
-      marginBottom: 80,
-      padding: 30
+      fontSize: 28,
+      marginBottom: 20,
+      padding: 10
     },
     button: {
       fontSize: 30,

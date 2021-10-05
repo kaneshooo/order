@@ -6,14 +6,14 @@ import 'firebase/storage';
 import 'firebase/firestore';
 import Header from '../components/Header'
 function TreasurerScreen(props,{navigation}){
-
-  var fee=props.route.params[0].fee
-  var id=props.route.params[0].id
-  const array=props.route.params
+  console.log(props)
+  let fee=props.route.params.section[0].fee
+  let id=props.route.params.section[0].id
+  let user=props.route.params.user
+  const array=props.route.params.section
   const [amount,setamount]=useState(0);
   const [result,setresult]=useState(0);
   const [state,setstate]=useState(false);
-  
   const onNum=(input)=>{
     var preamount=amount+Number(input)
     setamount(preamount)
@@ -43,14 +43,14 @@ function TreasurerScreen(props,{navigation}){
     };
 
   const del=async()=>{
-
-    var date=new Date();
+    console.log(id)
+    let date=new Date();
     var today=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
     var yesterday=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+(date.getDate()-1);
     const db=firebase.firestore();
-    const docref=db.collection('users').doc('order').collection('list').doc(String(id));
-    const earnings=db.collection("users").doc('earning').collection("list").doc(String(today));
-    const earnings_yes=db.collection("users").doc('earning').collection("list").doc(String(yesterday));
+    const docref=db.collection('user').doc(user).collection('order').doc(String(id));
+    const earnings=db.collection("user").doc(user).collection('earn').doc(String(today));
+    const earnings_yes=db.collection("user").doc(user).collection('earn').doc(String(yesterday));
     const check=await earnings.get()
 
     docref.delete().then(()=>{
@@ -62,39 +62,44 @@ function TreasurerScreen(props,{navigation}){
     //売上更新
     //営業中に日付が変わった場合
     if(!check.exists){
+      console.log(array)
       console.log('later')
       array.forEach((items=>{
+        console.log(items)
         earnings_yes.update({
-          earn:firebase.firestore.FieldValue.increment(fee),
-          [[items['name']]+'.num']:firebase.firestore.FieldValue.increment(items['num'])       
-        })
-        .catch((error)=>{
+          [[items['name']]+'.num']:firebase.firestore.FieldValue.increment(items.num)    
+          })
+      }))
+      earnings_yes.update({
+        earn:firebase.firestore.FieldValue.increment(fee)
+      })
+      .catch((error)=>{
           console.log(error)
-        })
-      }))  
+        }) 
     }
     //営業開始~日付変更迄
     else{
       console.log('before')
       array.forEach((items=>{
         earnings.update({
-          earn:firebase.firestore.FieldValue.increment(fee),
-          [[items['name']]+'.num']:firebase.firestore.FieldValue.increment(items['num'])       
+          [[items['name']]+'.num']:firebase.firestore.FieldValue.increment(items.num)       
         })
-        .catch((error)=>{
+      }))
+      earnings.update({
+        earn:firebase.firestore.FieldValue.increment(fee)
+      })
+      .catch((error)=>{
           console.log(error)
-        })
-      }))  
+      })
     }
   }
-  
   const closeModal=()=>{
     setstate(false)
   }
 
 return(
     <View >
-      <Header navigation={navigation} name="顧客管理"/>
+      <Header navigation={props.navigation} name="顧客管理" value="CostemerList" user={user} />
         <View style={styles.countArea}>
             <Text style={styles.value}>{amount}-{fee}={result}</Text>
         </View>
@@ -120,29 +125,6 @@ return(
               </TouchableOpacity>
           ))}
         </View>
-        {/* //足し算ボタン */}
-        {/* <View style={{ flexDirection: 'row'}}>
-            <TouchableOpacity style={[styles.button, styles.buttonUpText]} onPress={()=>this.onMark("+")}>
-              <Text style={styles.buttonText}>+</Text>
-            </TouchableOpacity> */}
-            {/* //引き算ボタン 
-            <TouchableOpacity style={[styles.button, styles.buttonMinus]} onPress={()=>this.onMark("-")}>
-              <Text style={styles.buttonText}>-</Text>
-            </TouchableOpacity>
-            //掛け算ボタン 
-            <TouchableOpacity style={[styles.button, styles.buttonTimes]} onPress={()=>this.onMark("×")}>
-              <Text style={styles.buttonText}>x</Text>
-            </TouchableOpacity>
-              //割り算ボタン 
-            <TouchableOpacity style={[styles.button, styles.buttonDivide]} onPress={()=>this.onMark("÷")}>
-              <Text style={styles.buttonText}>÷</Text>
-            </TouchableOpacity>
-              //=ボタン 
-            <TouchableOpacity style={[styles.button, styles.buttonEqual]} onPress={()=> this.onEqual()}>
-              <Text style={styles.buttonText}>=</Text>
-            </TouchableOpacity>
-            */}
-            {/* リセットボタン */}
             <TouchableOpacity style={[styles.button, styles.buttonReset]} onPress={()=> onReset()} >
               <Text style={[styles.buttonResetText]}>C</Text>
             </TouchableOpacity>
@@ -202,6 +184,9 @@ const styles=StyleSheet.create({
         padding: 15,
         elevation: 2,
         backgroundColor: "#00b2ff",
+        paddingBottom:15,
+        alignItems: 'center',
+        justifyContent: 'center',
       },
       textStyle: {
         color: "white",
