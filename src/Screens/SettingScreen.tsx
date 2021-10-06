@@ -14,13 +14,10 @@ import "firebase/storage";
 import "firebase/firestore";
 import Icon from "react-native-vector-icons/Ionicons";
 import Header from "../components/Header";
-import { TabView, ScrollPager, TabBar,SceneMap } from "react-native-tab-view";
-
+import { TabView, ScrollPager, TabBar, SceneMap } from "react-native-tab-view";
 
 function ListRoute(props) {
-  console.log(props)
-  let user=props.value.user
-  let routes=props.value.routes
+  let { user, routes } = props.value;
   return (
     <FlatList
       data={props.data}
@@ -29,7 +26,9 @@ function ListRoute(props) {
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.item}
-          onPress={() => props.navigation.navigate("Detail", { item ,user,routes})}
+          onPress={() =>
+            props.navigation.navigate("Detail", { item, user, routes })
+          }
         >
           <Image style={styles.img} source={{ uri: item.url }} />
           <Text>{item.name}</Text>
@@ -39,110 +38,111 @@ function ListRoute(props) {
   );
 }
 
-function SettingScreen(props) {
-      console.log(props)
+function SettingScreen({ navigation, route }) {
   const [data, setData] = useState(0);
   const [index, setIndex] = useState(0);
-
-  let checker=props.route.params.checker
-  let routes = props.route.params.routes;
-  let navigation = props.navigation;
-  let user=props.route.params.user;
+  let { checker, routes, user } = route.params;
   let classification = [];
 
   let db = firebase.firestore();
-   
+
   const dbget = async () => {
     const docRef = db
-    .collection("user")
-    .doc(user)
-    .collection("menu")
+      .collection("user")
+      .doc(user)
+      .collection("menu");
 
-  const result = await docRef.get().then(function(querySnapshot){
-    let str = [];
-    let key=[];
-    querySnapshot.forEach(doc => {
-      key=Object.keys(doc.data())
-      key.map((item)=>{
-        str.push(
-          Object.assign({          
-              id:doc.data()[item].id,
-              category:doc.data()[item].category,
-              name:doc.data()[item].name,
-              price:doc.data()[item].price,
-              url:doc.data()[item].url,        
-          })
-        )
-      })
+    const result = await docRef.get().then(function(querySnapshot) {
+      let str = [];
+      let key = [];
+      querySnapshot.forEach(doc => {
+        key = Object.keys(doc.data());
+        key.map(item => {
+          str.push(
+            Object.assign({
+              id: doc.data()[item].id,
+              category: doc.data()[item].category,
+              name: doc.data()[item].name,
+              price: doc.data()[item].price,
+              url: doc.data()[item].url
+            })
+          );
+        });
+      });
+      return str;
     });
-    return str;
-  });
 
-routes.forEach(function(category) {
-  classification.push(
-    result.filter(function(value) {
-      return value.category == category.title;
-    })
-  );
-});
-console.log(classification)
-console.log(result)
-setData(classification);
-};
-  
-useEffect(()=>{
-  dbget();
-},[checker])
- 
-const renderScene = ({ route }) => {
-  return <ListRoute data={data[route.key]} navigation={navigation} value={{user,routes}} />;
-}; 
-const initialLayout = { width: Dimensions.get("window").width };
-const renderTabBar = props => (
-  <TabBar
-    {...props}
-    indicatorStyle={{ backgroundColor: "#e91e63" }}
-    style={{ backgroundColor: "white" }}
-    labelStyle={{ color: "black" }}
-    scrollEnabled={true}
-    tabStyle={{ width: 80 }}
-    // onTabPress={({route,preventDefault})=>{
-    //   if(route.title=='+'){
-    //     console.log('AAAAAAAAAAA')
-    //   }
-    // }}
-  />
-);
+    routes.forEach(function(category) {
+      classification.push(
+        result.filter(function(value) {
+          return value.category == category.title;
+        })
+      );
+    });
+    console.log(classification);
+    console.log(result);
+    setData(classification);
+  };
 
-return (
-  <View style={styles.wrapper}>
-    <Header navigation={navigation} name="アイテム管理" />
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={initialLayout}
-      renderTabBar={renderTabBar}
-    />
+  useEffect(() => {
+    dbget();
+  }, [checker]);
 
-    <TouchableOpacity onPress={() => navigation.navigate("Register", {user,routes})}>
-      <Icon
-        style={styles.add}
-        name="add-circle-sharp"
-        size={70}
-        color="#053050"
+  const renderScene = ({ route }) => {
+    return (
+      <ListRoute
+        data={data[route.key]}
+        navigation={navigation}
+        value={{ user, routes }}
       />
-    </TouchableOpacity>
-  </View>
-);
-}
+    );
+  };
+  const initialLayout = { width: Dimensions.get("window").width };
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: "#e91e63" }}
+      style={{ backgroundColor: "white" }}
+      labelStyle={{ color: "black" }}
+      scrollEnabled={true}
+      tabStyle={{ width: 80 }}
+      // onTabPress={({route,preventDefault})=>{
+      //   if(route.title=='+'){
+      //     console.log('AAAAAAAAAAA')
+      //   }
+      // }}
+    />
+  );
 
+  return (
+    <View style={styles.wrapper}>
+      <Header navigation={navigation} name="アイテム管理" />
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+        renderTabBar={renderTabBar}
+      />
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Register", { user, routes })}
+      >
+        <Icon
+          style={styles.add}
+          name="add-circle-sharp"
+          size={70}
+          color="#053050"
+        />
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#FFF",
-    paddingTop: 15
+    backgroundColor: "#FFF"
   },
 
   distinction: {
@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: "#FFF",
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center"
   },
   add: {
     position: "absolute",
@@ -195,4 +195,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SettingScreen
+export default SettingScreen;
