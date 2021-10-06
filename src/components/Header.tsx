@@ -3,39 +3,38 @@ import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 function Header(props) {
-  console.log(props)
-  let user=props.user
-  let value=props.value
-  let navigation=props.navigation
-  let routes=props.route
-  let name=props.name
-  let checker=props.checker
+  let { user, value, navigation, route, name, checker } = props;
 
-  if(value=='CostemerList'||value=='Setting'){
-    return (
-      <View style={styles.header}>
+  const ReturnButton = () => {
+    if (value == "CostemerList" || value == "Setting") {
+      return (
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => props.navigation.navigate(value,{user,value,routes,checker})}
+          onPress={() =>
+            navigation.navigate(value, { user, value, routes, checker })
+          }
         >
           <Icon name="chevron-back" size={30} color="#73899d" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>{name}</Text>
-      </View>
-    );
-  }else{
-    return (
-      <View style={styles.header}>
+      );
+    } else {
+      return (
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Icon name="chevron-back" size={30} color="#73899d" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>{name}</Text>
-      </View>
-    );
-  }
+      );
+    }
+  };
+
+  return (
+    <View style={styles.header}>
+      <ReturnButton />
+      <Text style={styles.headerText}>{name}</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -44,13 +43,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingLeft: 5,
-    marginTop:50,
-    height: 50,
-    backgroundColor:"#053050",
+    height: 60,
+    paddingTop: 25,
+    backgroundColor: "#053050"
   },
   backButton: {
     position: "absolute",
-    left: 10
+    left: 10,
+    top: 25
   },
   headerText: {
     fontSize: 25,
